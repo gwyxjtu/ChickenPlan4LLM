@@ -1,0 +1,321 @@
+{
+    "load":{
+        "autoload":0,
+        "fileaddress":"load/my_load/",
+        "province":"内蒙古自治区",
+        "city": "",
+        "building_area":{
+            "apartment":1,
+            "hotel":0,
+            "office":0,
+            "restaurant":0
+        },
+        "load_area":123967.0,
+        "heat_mounth":"起始于5月1日，结束于4月30日",
+        "cold_mounth":"起始于1月1日，结束于12月31日",
+
+        "power_peak":{
+            "flag":0,
+            "ele":101,
+            "g":240,
+            "q":0
+        },
+        "power_sum":{
+            "flag":0,
+            "ele":332197,
+            "g":103300,
+            "q":0
+        },
+        "location":[40.2833,110.8500],
+        "industrial_input_mode": 0,
+        "industrial_mode":{
+            "单峰": [0,0],
+            "双峰": [0,0],
+            "午间低谷": [0,0],
+            "相对均匀": [0,0],
+            "夜间用能":[0,0]
+        }
+
+    },
+    "calc_mode":{
+
+        "grid":{
+            "solar_analys":0,
+            "p_pur_state":0,
+            "p_sol_state":0,
+            "h_pur_state":1
+        },
+        "isloate":{
+            "solar_analys":0,
+            "flag":0,
+            "h_pur_state":1
+        },
+        "cer":0,
+        "c_neutral":0,
+        "EMC_mode":0,
+        "obj":{
+            "capex_sum":0,
+            "capex_crf":1,
+            "opex":1
+        }
+    },
+    "renewable_energy":{
+        "pv_sc_max":10000000
+    },
+    "price":{
+        "TOU_power":[1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150,1.5150],
+        "power_sale":1.5150,
+        "discount":1,
+        "gas_price":4.085,
+        "heat_price":5.4,
+        "cold_price":9.5,
+        "carbon_price": 0.06,
+        "PSE":0.0,
+        "fixed_revenue":0,
+        "hydrogen_price":17.92,
+        "capex_max":[3000000000000,2500000000000],
+        "op_max":[111800000000000,20000000000000]
+    },
+
+    "device":{
+        "grid": {
+          "transformer": 100000
+        },
+        "co":
+            {
+                "_comment": "compressor, 压缩机",
+                "power_max":10000000,
+                "power_min":0,
+                "cost":0,
+                "crf":10,
+                "se":0,
+                "beta_co":1.399
+            },
+        "fc":
+            {
+                "_comment": "fuel cells, 燃料电池",
+                "power_max":566000000,
+                "power_min":0,
+
+                "cost":14000,
+                "crf":10,
+                "nominal_lower": 0,
+                "se":0,
+                "eta_fc_p":15,
+                "eta_ex_g":22,
+                "theta_ex":0.95,
+
+                "V_c": 10,
+                "t_fc": 85
+            },
+        "ht":
+            {
+                "_comment": "热水箱",
+                "water_max":0,
+                "water_min":0,
+                "cost":0.5,
+                "crf":20,
+                "se":0,
+
+                "t_max":90,
+                "t_min":4,
+                "t_supply":55,
+                "miu_loss":0.02
+            },
+
+        "eb":
+            {
+                "_comment": "电锅炉",
+                "power_max":100000000,
+                "power_min":0,
+                "cost":500,
+                "crf":10,
+                "se":0,
+                "beta_eb":0.9
+            },
+        "ac":
+            {
+                "_comment": "吸收式制冷机",
+                "power_max":100000000,
+                "power_min":0,
+                "cost":5000,
+                "crf":10,
+                "se":0,
+                "beta_ac":0.5
+            },
+        "hp":
+            {
+                "_comment": "热泵",
+                "power_max":0,
+                "power_min":0,
+                "cost":68000,
+                "crf":15,
+                "se":0,
+                "beta_hpg":4.59,
+                "beta_hpq":0
+            },
+        "hp1":
+            {
+                "_comment": "热泵1",
+                "power_max":0,
+                "power_min":0,
+                "cost":3000,
+                "crf":15,
+                "se":0,
+                "beta_hpg":3,
+                "beta_hpq":4
+            },
+        "hp2":
+            {
+                "_comment": "热泵2",
+                "power_max":0,
+                "power_min":0,
+                "cost":3000,
+                "crf":15,
+                "se":0,
+                "beta_hpg":3,
+                "beta_hpq":4
+            },
+        "ghp":
+            {
+                "_comment": "地源热泵",
+                "power_max":0,
+                "power_min":0,
+                "cost":3000,
+                "crf":15,
+                "se":0,
+                "beta_ghpg":3.54,
+                "beta_ghpq":4.5
+            },
+
+        "gtw":
+            {
+                "_comment": "地热井",
+                "number_max":2680,
+                "cost":20000,
+                "crf":30,
+                "se":0,
+                "beta_gtw":7
+            },
+        "ct":
+            {
+                "_comment": "冷水箱",
+                "water_max":500000,
+                "water_min":0,
+                "cost":0.5,
+                "crf":15,
+                "se":0,
+                "t_max":13,
+                "t_min":4,
+                "t_supply":7,
+                "miu_loss":0.9
+            },
+        "hst":
+            {
+                "_comment": "储氢罐",
+                "sto_max":2000,
+                "sto_min":0,
+                "cost":3000,
+                "crf":15,
+                "se":0,
+                "pressure_upper": 35,
+                "pressure_lower": 0.5,
+
+
+                "inout_max":5000
+            },
+
+        "el":
+            {
+                "_comment": "电解槽",
+                "power_max":5000000,
+                "nm3_max":24200,
+                "se":0,
+                "nm3_min":0,
+                "power_min":0,
+
+                "cost":2240,
+                "crf":7,
+                "pressure_upper": 3,
+                "pressure_lower": 0.1,
+                "beta_el":0.0182,
+
+                "500RtV":0
+            },
+        "hyd":
+            {
+                "_comment": "unknown",
+                "flag":0,
+                "supply":0,
+                "power_cost":0,
+                "se":0,
+                "peak":-1,
+
+                "cost":0,
+                "crf":20
+            },
+        "sc":
+            {
+                "_comment": "unknown",
+                "area_max":0,
+                "area_min":0,
+                "cost":800,
+                "crf":20,
+
+                "beta_sc":0.72,
+                "theta_ex":0.9,
+                "a_stc":100,
+                "miu_loss":0.0064,
+                "se":0,
+                "V_stc": 50,
+                "V_stc_ex": 5
+            },
+
+        "pv":
+            {
+                "_comment": "光伏",
+                "area_max":50000,
+                "area_min":0,
+                "cost":700,
+                "crf":20,
+                "se":0,
+                "beta_pv":0.21
+            },
+        "xb":
+            {
+                "_comment": "相变储能",
+                "s_max":10,
+                "s_min":0,
+                "cost":500,
+                "crf":20,
+                "se":0,
+                "p_kwh":0.13
+            },
+        "whp":
+            {
+                "_comment": "unknown",
+                "power_max":0,
+                "power_min":0,
+                "cost":3000,
+                "crf":15,
+                "se":0,
+                "beta_whp":3
+            },
+        "bs":
+            {
+                "_comment": "蓄电池",
+                "power_max":10000,
+                "power_min":0,
+                "cost":500,
+                "crf":5,
+                "se":0
+            }
+    },
+
+    "carbon":{
+        "alpha_h2":1.74,
+        "alpha_e":0.5839,
+        "alpha_EO":0.8922,
+        "alpha_gas":1.535
+    }
+}
