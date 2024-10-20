@@ -1,27 +1,8 @@
 {
     "load": {
-
-    },
-    "calc_mode": {
-        "grid": {
-            "solar_analyse": 0,
-            "p_pur_state": 0,
-            "p_sol_state": 0,
-            "h_pur_state": 1
-        },
-        "isolate": {
-            "solar_analyse": 0,
-            "flag": 0,
-            "h_pur_state": 1
-        },
-        "cer": 0,
-        "c_neutral": 0,
-        "EMC_mode": 0,
-        "obj": {
-            "capex_sum": 0,
-            "capex_crf": 1,
-            "opex": 1
-        }
+        "p_max":300,
+        "g_max":1000,
+        "q_max":200
     },
     "price": {
         "TOU_power": [
@@ -50,224 +31,118 @@
             1.515,
             1.515
         ],
-        "power_sale": 1.515,
-        "discount": 1,
-        "gas_price": 4.085,
-        "heat_price": 5.4,
-        "cold_price": 9.5,
-        "carbon_price": 0.06,
-        "PSE": 0.0,
-        "fixed_revenue": 0,
-        "hydrogen_price": 17.92,
-        "capex_max": [
-            3000000000000,
-            2500000000000
-        ],
-        "op_max": [
-            111800000000000,
-            20000000000000
-        ]
+        "p_sel_price": 0,
+        "g_price": 5.4,
+        "q_price": 9.5,
+        "h_price": 17.92
     },
     "device": {
-        "grid": {
-            "transformer": 100000
-        },
-        "co": {
-            "_comment": "compressor, 压缩机",
-            "power_max": 10000000,
+        "pv": {
+            "_comment": "photovoltaic, 光伏板",
+            "description": "",
+            "power_max": 50000,
             "power_min": 0,
-            "cost": 0,
-            "crf": 10,
-            "se": 0,
-            "beta_co": 1.399
+            "cost": 700,
+            "life": 20,
+            "beta_pv": 0.21
+        },
+        "sc": {
+            "_comment": "solar collector, 太阳能集热器",
+            "description": "",
+            "g_max": 0,
+            "g_min": 0,
+            "cost": 800,
+            "life": 20,
+            "beta_sc": 0.72
         },
         "fc": {
             "_comment": "fuel cell, 燃料电池",
-            "power_max": 566000000,
+            "description": "",
+            "power_max": 10000,
             "power_min": 0,
-            "cost": 14000,
-            "crf": 10,
-            "nominal_lower": 0,
-            "se": 0,
+            "cost": 8000,
+            "life": 10,
             "eta_fc_p": 15,
-            "eta_ex_g": 22,
-            "theta_ex": 0.95,
-            "V_c": 10,
-            "t_fc": 85
+            "eta_fc_g": 22
+        },
+        "el": {
+            "_comment": "electrolyzer, 电解槽",
+            "description": "",
+            "power_max": 1000,
+            "power_min": 0,
+            "cost": 2240,
+            "life": 7,
+            "beta_el": 0.0182
+        },
+        "eb": {
+            "_comment": "electric boiler, 电锅炉",
+            "description": "",
+            "power_max": 10000,
+            "power_min": 0,
+            "cost": 500,
+            "life": 10,
+            "beta_eb": 0.9
+        },
+        "hp": {
+            "_comment": "heat pump, 热泵",
+            "description": "",
+            "power_max": 0,
+            "power_min": 0,
+            "cost": 68000,
+            "life": 15,
+            "beta_hp_g": 4.59,
+            "beta_hp_q": 0
+        },
+        "ghp": {
+            "_comment": "ground source heat pump, 地源热泵",
+            "description": "",
+            "power_max": 0,
+            "power_min": 0,
+            "cost": 3000,
+            "life": 15,
+            "beta_ghp_g": 3.54,
+            "beta_ghp_q": 4.5
+        },
+        "gtw": {
+            "_comment": "ground thermal well, 地热井",
+            "description": "",
+            "number_max": 2680,
+            "cost": 20000,
+            "life": 30,
+            "beta_gtw": 7
+        },
+        "hst": {
+            "_comment": "hydrogen storage tank, 储氢罐",
+            "description": "",
+            "h_max": 2000,
+            "h_min": 0,
+            "cost": 3000,
+            "life": 15,
+            "inout_max": 5000
         },
         "ht": {
-            "_comment": "heating water tank, 热水箱",
+            "_comment": "heat storage tank, 热水箱",
+            "description": "",
             "water_max": 0,
             "water_min": 0,
             "cost": 0.5,
-            "crf": 20,
-            "se": 0,
-            "t_max": 90,
+            "life": 20,
+            "t_max": 80,
             "t_min": 4,
             "t_supply": 55,
             "miu_loss": 0.02
         },
-        "eb": {
-            "_comment": "electric boiler, 电锅炉",
-            "power_max": 100000000,
-            "power_min": 0,
-            "cost": 500,
-            "crf": 10,
-            "se": 0,
-            "beta_eb": 0.9
-        },
-        "ac": {
-            "_comment": "absorption chiller, 吸收式制冷机",
-            "power_max": 100000000,
-            "power_min": 0,
-            "cost": 5000,
-            "crf": 10,
-            "se": 0,
-            "beta_ac": 0.5
-        },
-        "hp": {
-            "_comment": "heat pump, 热泵",
-            "power_max": 0,
-            "power_min": 0,
-            "cost": 68000,
-            "crf": 15,
-            "se": 0,
-            "beta_hpg": 4.59,
-            "beta_hpq": 0
-        },
-        "hp1": {
-            "_comment": "heat pump 1, 热泵1",
-            "power_max": 0,
-            "power_min": 0,
-            "cost": 3000,
-            "crf": 15,
-            "se": 0,
-            "beta_hpg": 3,
-            "beta_hpq": 4
-        },
-        "hp2": {
-            "_comment": "heat pump 2, 热泵2",
-            "power_max": 0,
-            "power_min": 0,
-            "cost": 3000,
-            "crf": 15,
-            "se": 0,
-            "beta_hpg": 3,
-            "beta_hpq": 4
-        },
-        "ghp": {
-            "_comment": "ground source heat pump, 地源热泵",
-            "power_max": 0,
-            "power_min": 0,
-            "cost": 3000,
-            "crf": 15,
-            "se": 0,
-            "beta_ghpg": 3.54,
-            "beta_ghpq": 4.5
-        },
-        "gtw": {
-            "_comment": "ground thermal well, 地热井",
-            "number_max": 2680,
-            "cost": 20000,
-            "crf": 30,
-            "se": 0,
-            "beta_gtw": 7
-        },
         "ct": {
-            "_comment": "cooling water tank, 冷水箱",
+            "_comment": "cool storage tank, 冷水箱",
+            "description": "",
             "water_max": 500000,
             "water_min": 0,
             "cost": 0.5,
-            "crf": 15,
-            "se": 0,
+            "life": 15,
             "t_max": 13,
             "t_min": 4,
             "t_supply": 7,
             "miu_loss": 0.9
-        },
-        "hst": {
-            "_comment": "hydrogen buffer storage tank, 储氢罐",
-            "sto_max": 2000,
-            "sto_min": 0,
-            "cost": 3000,
-            "crf": 15,
-            "se": 0,
-            "pressure_upper": 35,
-            "pressure_lower": 0.5,
-            "inout_max": 5000
-        },
-        "el": {
-            "_comment": "electrolyzer, 电解槽",
-            "power_max": 5000000,
-            "nm3_max": 24200,
-            "se": 0,
-            "nm3_min": 0,
-            "power_min": 0,
-            "cost": 2240,
-            "crf": 7,
-            "pressure_upper": 3,
-            "pressure_lower": 0.1,
-            "beta_el": 0.0182,
-            "500RtV": 0
-        },
-        "hyd": {
-            "_comment": "unknown",
-            "flag": 0,
-            "supply": 0,
-            "power_cost": 0,
-            "se": 0,
-            "peak": -1,
-            "cost": 0,
-            "crf": 20
-        },
-        "sc": {
-            "_comment": "solar collector, 太阳能集热器",
-            "area_max": 0,
-            "area_min": 0,
-            "cost": 800,
-            "crf": 20,
-            "beta_sc": 0.72,
-            "theta_ex": 0.9,
-            "a_stc": 100,
-            "miu_loss": 0.0064,
-            "se": 0,
-            "V_stc": 50,
-            "V_stc_ex": 5
-        },
-        "pv": {
-            "_comment": "photovoltaic, 光伏",
-            "area_max": 50000,
-            "area_min": 0,
-            "cost": 700,
-            "crf": 20,
-            "se": 0,
-            "beta_pv": 0.21
-        },
-        "xb": {
-            "_comment": "相变储能",
-            "s_max": 10,
-            "s_min": 0,
-            "cost": 500,
-            "crf": 20,
-            "se": 0,
-            "p_kwh": 0.13
-        },
-        "whp": {
-            "_comment": "unknown",
-            "power_max": 0,
-            "power_min": 0,
-            "cost": 3000,
-            "crf": 15,
-            "se": 0,
-            "beta_whp": 3
-        },
-        "bs": {
-            "_comment": "battery storage, 蓄电池",
-            "power_max": 10000,
-            "power_min": 0,
-            "cost": 500,
-            "crf": 5,
-            "se": 0
         }
     },
     "carbon": {
