@@ -24,18 +24,6 @@ def planning_problem(period_data, input_param):
     Returns:
 
     """
-    # 一年中每个月的天数
-    days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    # 一年中每个月的累计小时数
-    hours_sum = [sum(days[:i]) * 24 for i in range(12 + 1)]
-
-    # 是否允许买电，卖电，买氢
-    # trade_flag = {
-    #     "p_pur": input_param["calc_mode"]["grid"]["p_pur_state"],
-    #     "p_sel": input_param["calc_mode"]["grid"]["p_sel_state"],
-    #     "h_pur": input_param["calc_mode"]["grid"]["h_pur_state"]
-    # }
-
     # ------ Create model ------
     model = gp.Model("OptModel")
 
@@ -46,10 +34,6 @@ def planning_problem(period_data, input_param):
     q_load = period_data["q_load"]*input_param["load"]["q_area"]  # 冷负荷乘以面积
     r_solar = period_data["r_solar"]  # 光照强度
 
-    # z_g_demand = period_data["z_heat_month"]
-    # z_q_demand = period_data["z_cold_month"]
-
-    # period = 8760  # 总时段数
     period = len(p_load)  # 总时段数
 
     # 展示负荷信息
@@ -60,10 +44,6 @@ def planning_problem(period_data, input_param):
     r_solar = r_solar * 4000 # 单位转化
     # --- 碳排放因子 ---
     alpha_e = input_param["carbon"]["alpha_e"]  # 电网排放因子 kg/kWh
-    alpha_gas = input_param["carbon"]["alpha_gas"]  # 天然气排放因子 kg/Nm3
-    alpha_h2 = input_param["carbon"]["alpha_h2"]  # 氢排放因子
-    alpha_EO = input_param["carbon"]["alpha_EO"]  # 减排项目基准排放因子
-
     # --- 能源价格 ---
     p_price = input_param["price"]["TOU_power"] * 365  # 分时电价
     p_sel_price = input_param["price"]["p_sel_price"]  # 卖电价格
@@ -71,19 +51,15 @@ def planning_problem(period_data, input_param):
 
     c = 4.2 / 3600  # 水的比热容
     M = 1e7  # 大 M
-    epsilon = 0.0000001
-
     # --- 各种设备的价格 ---
     cost_pv = input_param["device"]["pv"]["cost"]
     cost_sc = input_param["device"]["sc"]["cost"]
     cost_fc = input_param["device"]["fc"]["cost"]
     cost_el = input_param["device"]["el"]["cost"]
     cost_eb = input_param["device"]["eb"]["cost"]
-    # cost_ac = input_param["device"]["ac"]["cost"]
     cost_hp = input_param["device"]["hp"]["cost"]
     cost_ghp = input_param["device"]["ghp"]["cost"]
     cost_gtw = input_param["device"]["gtw"]["cost"]
-    # cost_co = input_param["device"]["co"]["cost"]
     cost_hst = input_param["device"]["hst"]["cost"]
     cost_ht = input_param["device"]["ht"]["cost"]  # yuan/kwh
 
@@ -100,7 +76,6 @@ def planning_problem(period_data, input_param):
     k_ghp_g = input_param["device"]["ghp"]["k_ghp_g"]
     k_ghp_q = input_param["device"]["ghp"]["k_ghp_q"]
     g_gtw = input_param["device"]["gtw"]["g_gtw"]
-    t_ht_supply = input_param["device"]["ht"]["t_supply"]
 
     g_gtw = input_param["device"]["gtw"]["g_gtw"]
     mu_ht_loss = 0.001
@@ -117,17 +92,13 @@ def planning_problem(period_data, input_param):
     g_sc = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_sc{t}") for t in range(period)]
 
     p_fc_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["fc"]["p_max"], name=f"p_fc_inst")
-    z_fc = [model.addVar(vtype=GRB.BINARY, name=f"z_fc{t}") for t in range(period)]
     h_fc = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"h_fc{t}") for t in range(period)]  # 燃料电池耗氢量
     p_fc = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_fc{t}") for t in range(period)]  # 燃料电池产电量
     g_fc = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_fc{t}") for t in range(period)]  # 燃料电池产热量
 
     p_el_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["el"]["p_max"], name="p_el_inst")  # rated heat power of fuel cells
-    # z_el = [m.addVar(lb=0, ub=1, vtype=GRB.BINARY, name=f"z_el{t}") for t in range(period)]
     h_el = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"h_el{t}") for t in range(period)]  # 电解槽制氢量
     p_el = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_el{t}") for t in range(period)]  # 电解槽耗电量
-    # g_el = [m.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_el{t}") for t in range(period)] # 电解槽产热量
-    # m_el = m.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"m_el") # fuel cells water
 
     p_eb_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["eb"]["p_max"], name=f"p_eb_inst")
     p_eb = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_eb{t}") for t in range(period)]  # 电锅炉耗电
@@ -228,56 +199,7 @@ def planning_problem(period_data, input_param):
 
     # --- 其他约束 ---
     model.addConstrs(g_ghp_gr[i] <= g_fc[i] + g_eb[i] for i in range(period)) # 当前系统只有燃料电池和电锅炉可以灌热
-    # model.addConstr(gp.quicksum(p_pur) <= (1 - cer) * (sum(ele_load) + sum(g_demand) / k_eb + sum(q_demand) / k_ghp_q))  # 碳减排约束，买电量不能超过碳排放,即1-碳减排
-    
-    # if input_param["calc_mode"]["c_neutral"] != 0:
-    #     model.addConstr(gp.quicksum(p_pur) <= (input_param["calc_mode"]["c_neutral"]) * (gp.quicksum(p_pv) + gp.quicksum(p_fc)))  # 碳中和约束
-    # model.addConstr(cost_c_ele == sum([ele_load[i] * ele_price[i] for i in range(period)]))
-    # model.addConstr(cost_c_heat == sum([g_demand[i] / 0.95 * ele_price[i] for i in range(period)]))  # /(3.41))
-    # model.addConstr(cost_c_cool == sum([q_demand[i] / 4 * ele_price[i] for i in range(period)]))  # /3.8)
-    # model.addConstr(cost_c == cost_c_cool + cost_c_heat + cost_c_ele)
-
-    # model.addConstr(ce_h == gp.quicksum(p_pur) * alpha_e)  # -gp.quicksum(p_sol)*alpha_e
-
-    # --- unused ---
-    # 每日水罐温度平衡，非季节储氢量平衡
-    # for i in range(int(period/24)-1):
-    # m.addConstr(t_ht[i*24+24] == t_ht[24*i])
-    # m.addConstr(t_ct[i*24+24] == t_ct[24*i])
-    # m.addConstr(h_hst[i*24+24] == h_hst[24*i])
-
-    # m.addConstr(p_el_max == 56818)
-    # m.addConstr(p_fc_max == 5293)
-    # m.addConstr(p_ec_max == 195)
-    # m.addConstr(p_hp_max == 0)
-    # m.addConstr(s_pv == 70190)
-    # 储能约束
-    # if i%24 == 0 and int(i/24)<364:
-    # m.addConstr(m_ct * (t_ct[i] - t_ct[i+1]) + q_demand[i]/c == m_hpc[i] * (5) +m_ec[i]*(5)  - eta_loss*m_ct*(t_ct[i] - 16))
-    # m.addConstr(h_sto[i+1] - h_sto[i] + h_ssto[int(i/24)+1] - h_ssto[int(i/24)] == h_pur[i] + h_el[i] - h_fc[i])
-
-    # for i in range(period - 1):
-    #     # cold water tank and cold supply
-    #     else:
-    #     m.addConstr(m_ct * (t_ct[i] - t_ct[i+1]) + q_demand[i]/c == m_hpc[i] * (5) +m_ec[i]*(5)  - eta_loss*m_ct*(t_ct[i] - 16))
-
-    # m.addConstr(gp.quicksum(q_hpg)+gp.quicksum(p_hpgc)+gp.quicksum(g_hpg_gr) >= gp.quicksum(g_hpg)-gp.quicksum(p_hpg))
-    # m.addConstr(s_pv*cost_pv +s_sc*cost_sc +p_hpg_max*cost_hpg +cost_gtw*num_gtw +cost_ht*m_ht+cost_ht*m_ct+cost_hst*hst+cost_eb*p_eb_max+cost_hp*p_hp_max+cost_fc*p_fc_max+cost_el*p_el_max + 10*gp.quicksum([p_pur[i]*lambda_ele_in[i] for i in range(period)])-10*gp.quicksum(p_sol)*lambda_ele_out+10*lambda_h*gp.quicksum(h_pur)+954>=0 )
-    # m.addConstr(cost_hyd*input_json["device"]['hyd']['flag'] + s_pv*cost_pv +s_sc*cost_sc +p_hpg_max*cost_hpg +cost_gtw*num_gtw +cost_ht*m_ht+cost_ht*m_ct+cost_hst*hst+cost_eb*p_eb_max+cost_hp*p_hp_max+cost_fc*p_fc_max+cost_el*p_el_max <= input_json['price']['capex_max'][1-isloate[1]])
-    # for i in range(period):
-    #     m.addConstr(t_ht[-1] == t_ht[0])
-    #     m.addConstr(t_ct[-1] == t_ct[0])
-    #     m.addConstr(h_hst[-12] == h_hst[0])
-    #
-    #     m.addConstr(z_hpgq[i] <= q_demand[i])
-    #     m.addConstr(z_hpgg[i] <= g_demand[i])
-    #     m.addConstr(g_fc[i] == c*m_fc[i]*(10))
-    #     m.addConstr(m_fc[i] <= g_fc[i]*100000)
-    #     m.addConstr(z_fc[i]+g_fc[i]>=0.01)
-    # m.addConstr(num_gtw_inst*p_gtw==p_ghp_inst)  # 井和热泵有关联
-
     # ------ Objective ------
-
     capex = ( cost_pv * p_pv_inst / input_param["device"]["pv"]["life"]
                  + p_fc_inst * cost_fc / input_param["device"]["fc"]["life"]
                  + p_el_inst * cost_el / input_param["device"]["el"]["life"]
@@ -296,15 +218,10 @@ def planning_problem(period_data, input_param):
         (capex + opex),
         GRB.MINIMIZE
     )
-
     # ------ Optimize ------
     model.params.NonConvex = 2
     model.Params.LogFile = "log/mip.log"
     model.params.MIPGap = 0.01
-    # print(m.status)
-
-    tick = time.time()
-
     try:
         model.optimize()
     except gp.GurobiError:
@@ -398,19 +315,6 @@ def planning_problem(period_data, input_param):
             "G_sc": format(g_sc_inst.X, ".1f"),  # 集热器面积/m2
         },
     }
-    # print(device_cap)
-
-    # 运行后的输出
-    # operation_output_json = {
-    #         "operation_cost": op_sum,  # 年化运行成本/万元
-    #         "cost_save_rate": (op_c-op_sum)/op_c,  #运行成本节约比例
-    #         "co2":0,  #总碳排/t
-    #         "cer":0,  #碳减排率
-    #         "cer_perm2":200  #每平米的碳减排量/t
-    # }
-    # 第一步，计算 传统 电气系统 和 电系统 的 运行成本， 碳排放
-
-    # ele_price = input_json["price"]["TOU_power"]*365
     ele_sum_ele_only = np.array(p_load) + np.array(g_load) / k_eb + np.array(q_load) / k_ghp_q
     co2_ele_only = sum(ele_sum_ele_only) * input_param["carbon"]["alpha_e"]
     operation_output_json = {
@@ -459,5 +363,4 @@ if __name__ == "__main__":
         sys.path.append(project_path)
     else:
         print("Project path already in sys path.")
-    # from module.utils import to_csv
     print("Start")
