@@ -1,0 +1,8 @@
+\ Model OptModel_copy
+\ LP format - for model browsing. Use MPS format to capture full model detail.
+Minimize
+  0 m_ht_inst
+Subject To
+Bounds
+ 1000 <= m_ht_inst <= 0
+End
