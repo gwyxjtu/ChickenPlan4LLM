@@ -1,11 +1,5 @@
 import sys
 import os
-import time
-import random
-from tkinter import E
-import xlwt
-import xlrd
-import csv
 import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
@@ -27,7 +21,8 @@ def planning_problem(period_data, input_param):
     # ------ Create model ------
     model = gp.Model("OptModel")
 
-    # ------ Parameters ------
+    # ------ Parameters input ------
+    # --- 参数输入，时序数据包括电、热、冷、光照强度；单一数据包括碳排放因子、能源价格、设备价格、设备效率等 ---
     # --- 各时段数据 ---
     p_load = period_data["p_load"]*input_param["load"]["p_area"]  # 电负荷乘以面积
     g_load = period_data["g_load"]*input_param["load"]["g_area"]  # 热负荷乘以面积
@@ -129,8 +124,6 @@ def planning_problem(period_data, input_param):
     q_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"q_ct{t}") for t in range(period)]
 
     g_tube = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_tube{t}") for t in range(period)]
-
-    # ------ Update model ------
     model.update()
 
     # ------ Constraints ------
@@ -167,6 +160,7 @@ def planning_problem(period_data, input_param):
         model.addConstr(h_hst[i] <= h_hst_inst)
 
     model.addConstr(num_gtw_inst * g_gtw >= p_ghp_inst * k_ghp_g)  # 井和热泵有关联，制热量-电功率=取热量
+    
     # --- 能量平衡约束 ---
     # 电平衡约束
     model.addConstrs(p_load[i] == p_pur[i] + p_pv[i] + p_fc[i]
@@ -197,8 +191,6 @@ def planning_problem(period_data, input_param):
     # 储氢平衡约束
     model.addConstr(h_hst[0] - h_hst[-1] == h_pur[-1] + h_el[-1] - h_fc[-1])  # 储氢罐约束
 
-    # --- 其他约束 ---
-    model.addConstrs(g_ghp_gr[i] <= g_fc[i] + g_eb[i] for i in range(period)) # 当前系统只有燃料电池和电锅炉可以灌热
     # ------ Objective ------
     capex = ( cost_pv * p_pv_inst / input_param["device"]["pv"]["life"]
                  + p_fc_inst * cost_fc / input_param["device"]["fc"]["life"]
@@ -209,10 +201,10 @@ def planning_problem(period_data, input_param):
                  + p_ghp_inst * cost_ghp / input_param["device"]["ghp"]["life"]
                  + num_gtw_inst * cost_gtw / input_param["device"]["gtw"]["life"]
                  + h_hst_inst * cost_hst / input_param["device"]["hst"]["life"]
-                 + m_ht_inst * cost_ht / input_param["device"]["ht"]["life"])
+                 + m_ht_inst * cost_ht / input_param["device"]["ht"]["life"]) # 年化投资费用
     opex = (gp.quicksum([p_pur[i] * p_price[i] for i in range(period)])
             - gp.quicksum([p_sel[i] for i in range(period)]) * p_sel_price
-            + gp.quicksum([h_pur[i] for i in range(period)]) * h_price)
+            + gp.quicksum([h_pur[i] for i in range(period)]) * h_price) # 运行费用
 
     model.setObjective(
         (capex + opex),
