@@ -1,82 +1,95 @@
+import time
 import streamlit as st
 from streamlit_option_menu import option_menu
-from code_editor import code_editor
+from streamlit_ace import st_ace
+from constant import (DEFAULT_DESCRIPTION, 
+                      DEFAULT_JSON_DESCRIPTION,
+                      DEFAULT_PARAMS,
+                      TEXT_AREA_HEIGHT,
+                      CODE_EDITOR_HEIGHT
+                          )
 
+# 页面配置
+st.set_page_config(page_title="Energy LLM", page_icon=":rocket:", layout="wide")
+st.markdown("""
+        <style>
+               .block-container {
+                    padding-top: 1rem;
+                    padding-bottom: 0rem;
+                }
+        </style>
+        """, unsafe_allow_html=True)
+
+if "description" not in st.session_state:
+    st.session_state["description"] = DEFAULT_DESCRIPTION
+
+if "json_description" not in st.session_state:
+    st.session_state["json_description"] = DEFAULT_JSON_DESCRIPTION
+
+if "parameters" not in st.session_state:
+    st.session_state["parameters"] = DEFAULT_PARAMS
+
+
+# 页面内容
+def page_language2json():
+    
+    def save_description():
+        st.info("Save Success")
+    
+    def generate_json():
+        description = st.session_state.description
+        st.session_state.json_description = "{\n\"test\": 0\n}"
+
+    def clear_json():
+        st.session_state.description = ""
+    
+    # 主内容区域
+    col1, col2 = st.columns(2)
+    with col1:
+        description = st.text_area("## 自然语言描述", st.session_state.description, height=TEXT_AREA_HEIGHT)
+        st.session_state["description"] = description
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.button("保存描述", on_click=save_description)
+        with c2:
+            st.button("生成Json", on_click=generate_json)
+        with c3:
+            st.button("清空信息", on_click=clear_json)
+    with col2:
+        st.text("JSON描述")
+        json_description=st_ace(st.session_state.json_description, language="json", height=CODE_EDITOR_HEIGHT)
+        st.session_state["json_description"] = json_description
+
+def page_json2param():
+    
+    def generate_params():
+        description = st.session_state.description
+        json_description = st.session_state.json_description
+        st.session_state.parameters = "{\n\"params\": 0\n}"
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.text("JSON描述")
+        st_ace(st.session_state.json_description, language="json", height=CODE_EDITOR_HEIGHT, readonly=True)
+        st.button("生成参数", on_click=generate_params)
+    with col2:
+        st.text("JSON参数")
+        params = st_ace(st.session_state.parameters, language="json", height=CODE_EDITOR_HEIGHT)
+        st.session_state["parameters"] = params
+        st.button("求解")
+
+def page_param2code():
+    pass
 
 # 页面标题
 st.title("Energy LLM")
 
 with st.sidebar:
-    selected_tab = option_menu("Workflow", ["Description", "Parameters", "Constraints & Objective", 
-        "Mathematical Formulation", "Coding", "Data Processing", "Testing"], 
-        icons=['house']*7, menu_icon="cast", default_index=1)
+    selected_tab = option_menu("Workflow", ["Description", "Parameters", 
+                                            "Coding", "Data Processing", 
+                                            "Testing"], 
+        icons=['house']*5, menu_icon="cast", default_index=0)
 
-def language2json():
-    st.text_area("自然语言", "这里输入自然语言", height=200)
-    json_data = """
-    {
-  "users": [
-    {
-      "id": 1,
-      "name": "张三",
-      "age": 28,
-      "email": "zhangsan@example.com",
-      "phone": "+86 138 0000 0000",
-      "address": {
-        "street": "长安街",
-        "city": "北京",
-        "postal_code": "100000"
-      },
-      "activities": [
-        {
-          "activity_id": 101,
-          "activity_name": "参加会议",
-          "date": "2023-10-01",
-          "duration": "2小时",
-          "location": "北京会议中心"
-        },
-        {
-          "activity_id": 102,
-          "activity_name": "项目演示",
-          "date": "2023-10-05",
-          "duration": "1.5小时",
-          "location": "公司总部"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "李四",
-      "age": 32,
-      "email": "lisi@example.com",
-      "phone": "+86 139 0000 0000",
-      "address": {
-        "street": "人民路",
-        "city": "上海",
-        "postal_code": "200000"
-      },
-      "activities": [
-        {
-          "activity_id": 201,
-          "activity_name": "团队建设",
-          "date": "2023-10-10",
-          "duration": "3小时",
-          "location": "上海野生动物园"
-        },
-        {
-          "activity_id": 202,
-          "activity_name": "技术研讨会",
-          "date": "2023-10-15",
-          "duration": "4小时",
-          "location": "上海科技馆"
-        }
-      ]
-    }
-  ]
-}
-"""
-    st.text("这里是json")
-    code_editor(json_data, "json")
 
 # 主内容区域
 if selected_tab:
@@ -84,16 +97,10 @@ if selected_tab:
 
     # 根据选中的标签显示对应内容
     if selected_tab == "Description":
-        language2json()
+        page_language2json()
 
     elif selected_tab == "Parameters":
-        st.write("Parameters section is under construction.")
-
-    elif selected_tab == "Constraints & Objective":
-        st.write("Constraints and Objective section is under construction.")
-
-    elif selected_tab == "Mathematical Formulation":
-        st.write("Mathematical Formulation section is under construction.")
+        page_json2param()
 
     elif selected_tab == "Coding":
         st.write("Coding section is under construction.")
@@ -103,23 +110,3 @@ if selected_tab:
 
     elif selected_tab == "Testing":
         st.write("Testing section is under construction.")
-
-# 底部按钮
-st.markdown("---")
-col1, col2, col3 = st.columns([1, 1, 1])
-
-with col1:
-    if st.button("Reset"):
-        st.write("Resetting...")
-
-with col2:
-    if st.button("I’m feeling lucky!"):
-        st.write("Feeling lucky!")
-
-with col3:
-    if st.button("Analyze"):
-        st.write("Analyzing...")
-
-# 运行指令
-if __name__ == "__main__":
-    st.write("Run this app with `streamlit run app.py`.")
