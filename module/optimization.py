@@ -159,7 +159,7 @@ def planning_problem(period_data, input_param):
         # 储氢罐
         model.addConstr(h_hst[i] <= h_hst_inst)
 
-    model.addConstr(num_gtw_inst * g_gtw >= p_ghp_inst * k_ghp_g)  # 井和热泵有关联，制热量-电功率=取热量
+    model.addConstr(num_gtw_inst * g_gtw >= p_ghp_inst * k_ghp_g)  # 井和热泵有关联
     
     # --- 能量平衡约束 ---
     # 电平衡约束

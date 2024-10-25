@@ -123,8 +123,7 @@
             "h_max": 2000,
             "h_min": 0,
             "cost": 3000,
-            "life": 15,
-            "inout_max": 5000
+            "life": 15
         },
         "ht": {
             "_comment": "heat storage tank, 热水箱",
@@ -135,7 +134,6 @@
             "life": 20,
             "t_max": 80,
             "t_min": 20,
-            "t_supply": 55,
             "miu_loss": 0.01
         },
         "ct": {
@@ -147,8 +145,7 @@
             "life": 15,
             "t_max": 13,
             "t_min": 4,
-            "t_supply": 7,
-            "miu_loss": 0.9
+            "miu_loss": 0.01
         }
     },
     "carbon": {
