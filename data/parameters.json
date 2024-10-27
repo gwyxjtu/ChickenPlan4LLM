@@ -37,43 +37,40 @@
             0.515,
             0.515
         ],
-        "p_sel_price": 0,
+        "p_sell_price": 0,
         "g_price": 5.4,
         "q_price": 9.5,
         "h_price": 17.92
     },
     "device": {
         "pv": {
-            "_comment": "photovoltaic, 光伏板",
-            "description": "",
-            "p_max": 50000,
-            "p_min": 0,
+            "_comment": "photovoltaic，光伏板",
+            "area_max": 50000,
+            "area_min": 0,
             "cost": 700,
             "life": 20,
             "k_pv": 0.21
         },
         "sc": {
-            "_comment": "solar collector, 太阳能集热器",
-            "description": "",
-            "g_max": 0,
-            "g_min": 0,
+            "_comment": "solar collector，太阳能集热器",
+            "area_max": 0,
+            "area_min": 0,
             "cost": 800,
             "life": 20,
             "k_sc": 0.72
         },
         "fc": {
-            "_comment": "fuel cell, 燃料电池",
-            "description": "",
+            "_comment": "fuel cell，氢燃料电池",
             "p_max": 10000,
             "p_min": 0,
             "cost": 8000,
             "life": 10,
             "k_fc_p": 15,
-            "k_fc_g": 22
+            "k_fc_g": 22,
+            "eta_ex": 0.95
         },
         "el": {
-            "_comment": "electrolyzer, 电解槽",
-            "description": "",
+            "_comment": "electrolyzer，电解槽",
             "p_max": 1000,
             "p_min": 0,
             "cost": 2240,
@@ -81,8 +78,7 @@
             "k_el": 0.0182
         },
         "eb": {
-            "_comment": "electric boiler, 电锅炉",
-            "description": "",
+            "_comment": "electric boiler，电锅炉",
             "p_max": 10000,
             "p_min": 0,
             "cost": 500,
@@ -90,8 +86,7 @@
             "k_eb": 0.9
         },
         "hp": {
-            "_comment": "heat pump, 热泵",
-            "description": "",
+            "_comment": "heat pump，热泵",
             "p_max": 1000,
             "p_min": 0,
             "cost": 68000,
@@ -100,8 +95,7 @@
             "k_hp_q": 0
         },
         "ghp": {
-            "_comment": "ground source heat pump, 地源热泵",
-            "description": "",
+            "_comment": "ground source heat pump，地源热泵",
             "p_max": 1000,
             "p_min": 0,
             "cost": 3000,
@@ -110,42 +104,30 @@
             "k_ghp_q": 4.5
         },
         "gtw": {
-            "_comment": "ground thermal well, 地热井",
-            "description": "",
+            "_comment": "ground thermal well，地热井",
             "number_max": 2680,
             "cost": 20000,
             "life": 30,
             "g_gtw": 7
         },
         "hst": {
-            "_comment": "hydrogen storage tank, 储氢罐",
-            "description": "",
+            "_comment": "hydrogen storage tank，储氢罐",
             "h_max": 2000,
             "h_min": 0,
             "cost": 3000,
             "life": 15
         },
-        "ht": {
-            "_comment": "heat storage tank, 热水箱",
-            "description": "",
+        "tank": {
+            "_comment": "water tank，蓄水箱，用于储热（此时为热水箱（ht））或储冷（此时为冷水箱（ct））",
             "m_max": 10000,
             "m_min": 0,
             "cost": 0.5,
             "life": 20,
-            "t_max": 80,
-            "t_min": 20,
-            "miu_loss": 0.01
-        },
-        "ct": {
-            "_comment": "cool storage tank, 冷水箱",
-            "description": "",
-            "m_max": 500000,
-            "m_min": 0,
-            "cost": 0.5,
-            "life": 15,
-            "t_max": 13,
-            "t_min": 4,
-            "miu_loss": 0.01
+            "t_ht_max": 80,
+            "t_ht_min": 20,
+            "t_ct_max": 13,
+            "t_ct_min": 4,
+            "mu_loss": 0.001
         }
     },
     "carbon": {

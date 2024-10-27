@@ -343,7 +343,7 @@ prompt = prompt_template_json1.format(
     solver=solver,
     example_input_json1=json.dumps(example_input_json1, indent=4, ensure_ascii=False),
     example_output_json1=example_output,
-    input_json1=json.dumps(device_input, indent=4, ensure_ascii=False),
+    input_json1=json.dumps(device_input, ensure_ascii=False),
 )
 
 print(prompt)
