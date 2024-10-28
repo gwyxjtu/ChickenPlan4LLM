@@ -189,7 +189,8 @@ example_info_output = {
 }
 
 # param_prompt的示例输入和输出
-example_param_info_input = {"参数": example_info_output["参数"]}
+# example_param_info_input = {"参数": example_info_output["参数"]}
+example_info_input = example_info_output
 example_param_output = {
     "load": {
         "building_type": "Hotel",
@@ -331,7 +332,6 @@ example_param_output = {
 }
 
 # code_prompt的示例输入和输出
-example_info_input = example_info_output
 example_param_input = example_param_output
 example_code_output = r"""
 def planning_problem(period_data, input_param):
@@ -531,7 +531,7 @@ if __name__ == "__main__":
     print("=" * 50)
     print("下面是param_prompt的示例：")
     print("example_user_input:\n", example_user_input)
-    print("example_param_info_input:\n", example_param_info_input)
+    print("example_info_input:\n", example_info_input)
     print("example_param_output:\n", example_param_output)
     print("=" * 50)
     print("下面是code_prompt的示例：")
