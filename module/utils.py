@@ -90,7 +90,6 @@ def call_openai(
             messages=messages,
             max_completion_tokens=max_response_tokens,
             max_tokens=max_tokens,
-            stream=True,
             temperature=temperature
         )
         content = completion.choices[0].message.content
