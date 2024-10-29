@@ -12,7 +12,8 @@ from constant import (
     DEFAULT_PARAMS,
     DEFAULT_CODE,
     TEXT_AREA_HEIGHT,
-    CODE_EDITOR_HEIGHT
+    CODE_EDITOR_HEIGHT,
+    MODEL
 )
 
 from module.LLM import (
@@ -63,11 +64,10 @@ if "code" not in st.session_state:
 # 页面内容
 def page_language2json():
 
-    # 主内容区域
-    col1, col2 = st.columns(2)
     def save_description(description):
         st.session_state.description = description
         st.info("保存成功")
+    
     @st.dialog("stream")
     def generate_json():
         user_input = st.session_state.description
@@ -83,12 +83,11 @@ def page_language2json():
                 client=client,
                 system_prompt=info_sys_prompt,
                 user_prompt=info_user_prompt,
-                model="gpt-4o-mini",
+                model=MODEL,
                 max_response_tokens=8192,
                 max_tokens=128000,
                 temperature=0.3
             )
-            # with col2:
             with st.empty():
                 st.text("JSON描述")
                 full_response = ""
@@ -105,20 +104,9 @@ def page_language2json():
                         st.session_state.json_description = full_response
                     else:
                         full_response += content
-                        
                         st.write(full_response)
                         st.session_state.json_description = full_response
                     
-            # response = call_openai(
-            #     client=client,
-            #     system_prompt=info_sys_prompt,
-            #     user_prompt=info_user_prompt,
-            #     model="gpt-4o",
-            #     max_response_tokens=8192,
-            #     max_tokens=128000,
-            #     temperature=0.3
-            # )
-            # st.session_state.json_description = response
         else:
             st.warning("请先输入问题描述")
 
@@ -127,7 +115,8 @@ def page_language2json():
         st.session_state.json_description = ""
         st.info("已清空输入")
 
-    
+    # 主内容区域
+    col1, col2 = st.columns(2)
     with col1:
         description = st.text_area("## 自然语言描述", value=st.session_state.get("description", ""), height=TEXT_AREA_HEIGHT)
         c1, c2, c3 = st.columns(3)
@@ -144,6 +133,8 @@ def page_language2json():
 
 
 def page_json2param():
+    
+    @st.dialog("stream")
     def generate_params():
         user_input = st.session_state.description
         info_input = st.session_state.json_description
@@ -157,16 +148,33 @@ def page_json2param():
                 user_input=json.dumps(user_input, ensure_ascii=False),
                 param_info_input=json.dumps(info_input, ensure_ascii=False)
             )
-            response = call_openai(
+            completion = call_openai_stream(
                 client=client,
                 system_prompt=param_sys_prompt,
                 user_prompt=param_user_prompt,
-                model="gpt-4o",
+                model=MODEL,
                 max_response_tokens=8192,
                 max_tokens=128000,
                 temperature=0.3
             )
-            st.session_state.parameters = response
+            with st.empty():
+                st.text("正在生成参数")
+                full_response = ""
+                for i, chunk in enumerate(completion):
+                    content = chunk.choices[0].delta.content
+                    if content is None:
+                        st.write("生成完成")
+                        if "```json" in full_response:
+                            # 删除开头的```json和结尾的```，以及两端的换行符
+                            full_response = full_response.split("```json")[1].split("```")[0].strip()
+                        elif "```python" in full_response:
+                            # 删除开头的```python和结尾的```，以及两端的换行符
+                            full_response = full_response.split("```python")[1].split("```")[0].strip()
+                        st.session_state.parameters = full_response
+                    else:
+                        full_response += content
+                        st.write(full_response)
+                        st.session_state.parameters = full_response
         else:
             st.warning("问题描述或JSON描述缺失")
 
@@ -183,6 +191,8 @@ def page_json2param():
 
 
 def page_param2code():
+    
+    @st.dialog("stream")
     def generate_code():
         info_input = st.session_state.json_description
         param_input = st.session_state.parameters
@@ -197,17 +207,33 @@ def page_param2code():
                 info_input=json.dumps(info_input, ensure_ascii=False),
                 param_input=json.dumps(param_input, ensure_ascii=False)
             )
-            response = call_openai(
+            completion = call_openai_stream(
                 client=client,
                 system_prompt=code_sys_prompt,
                 user_prompt=code_user_prompt,
-                model="gpt-4o",
+                model=MODEL,
                 max_response_tokens=8192,
                 max_tokens=128000,
                 temperature=0.3
             )
-            st.session_state.code = response
-            st.success("代码已生成")
+            with st.empty():
+                st.text("正在生成代码")
+                full_response = ""
+                for i, chunk in enumerate(completion):
+                    content = chunk.choices[0].delta.content
+                    if content is None:
+                        st.write("代码已生成")
+                        if "```json" in full_response:
+                            # 删除开头的```json和结尾的```，以及两端的换行符
+                            full_response = full_response.split("```json")[1].split("```")[0].strip()
+                        elif "```python" in full_response:
+                            # 删除开头的```python和结尾的```，以及两端的换行符
+                            full_response = full_response.split("```python")[1].split("```")[0].strip()
+                        st.session_state.code = full_response
+                    else:
+                        full_response += content
+                        st.write(full_response)
+                        st.session_state.code = full_response
         else:
             st.warning("JSON描述或参数缺失")
 
