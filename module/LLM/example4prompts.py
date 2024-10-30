@@ -333,8 +333,14 @@ example_param_output = {
 
 # code_prompt的示例输入和输出
 example_param_input = example_param_output
-example_code_output = r"""
+example_code_output = """
 def planning_problem(period_data, input_param):
+    \"\"\"规划问题求解
+
+    Args:
+        period_data (dict): 各时段数据，包括光照强度、电负荷、热负荷、冷负荷
+        input_param (dict): 输入参数，包括碳排放因子、能源价格、设备价格、设备效率等
+    \"\"\"
     # 常数
     c_water = 4.2 / 3600  # 水的比热容
     M = 1e7  # 大 M
@@ -353,8 +359,8 @@ def planning_problem(period_data, input_param):
     period = len(p_load)  # 总时段数
 
     # 展示负荷信息
-    print("热负荷总量{}，冷负荷总量：{}，电负荷总量：{}".format(sum(g_load), sum(q_load), sum(p_load)))
-    print("热负荷峰值{}，冷负荷峰值：{}，电负荷峰值：{}".format(max(g_load), max(q_load), max(p_load)))
+    print("热负荷总量：{}，冷负荷总量：{}，电负荷总量：{}".format(sum(g_load), sum(q_load), sum(p_load)))
+    print("热负荷峰值：{}，冷负荷峰值：{}，电负荷峰值：{}".format(max(g_load), max(q_load), max(p_load)))
     print("-" * 10 + "g, q, e_load" + "-" * 10)
     p_load, g_load, q_load, r_solar = np.array(p_load), np.array(g_load), np.array(q_load), np.array(r_solar)
     r_solar = r_solar * 4000  # 单位转化

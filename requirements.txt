@@ -1,3 +1,5 @@
+openai==1.52.2
+gurobipy>=10.0.3
 streamlit
 streamlit-option-menu
 streamlit-ace

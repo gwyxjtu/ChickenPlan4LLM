@@ -129,7 +129,7 @@ def call_openai_stream(
         max_response_tokens: int = 4096,
         max_tokens: int = 128000,
         temperature: float = 0.5
-) -> str:
+):
     """调用 OpenAI API
 
     Args:
