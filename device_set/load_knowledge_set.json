@@ -1,0 +1,182 @@
+{
+    "安徽省": [
+        "Apartment:./data/load/Apartment_Anhui_Hefei_load.csv",
+        "Hotel:./data/load/Hotel_Anhui_Hefei_load.csv",
+        "Restaurant:./data/load/Restaurant_Anhui_Hefei_load.csv",
+        "Office:./data/load/Office_Anhui_Hefei_load.csv"
+    ],
+    "澳门特别行政区": [
+        "Apartment:./data/load/Apartment_Aomen_load.csv",
+        "Hotel:./data/load/Hotel_Aomen_load.csv",
+        "Restaurant:./data/load/Restaurant_Aomen_load.csv",
+        "Office:./data/load/Office_Aomen_load.csv"
+    ],
+    "北京市": [
+        "Apartment:./data/load/Apartment_Beijing_load.csv",
+        "Hotel:./data/load/Hotel_Beijing_load.csv",
+        "Restaurant:./data/load/Restaurant_Beijing_load.csv",
+        "Office:./data/load/Office_Beijing_load.csv"
+    ],
+    "福建省": [
+        "Apartment:./data/load/Apartment_Fujian_Xiamen_load.csv",
+        "Hotel:./data/load/Hotel_Fujian_Xiamen_load.csv",
+        "Restaurant:./data/load/Restaurant_Fujian_Xiamen_load.csv",
+        "Office:./data/load/Office_Fujian_Xiamen_load.csv"
+    ],
+    "甘肃省": [
+        "Apartment:./data/load/Apartment_Gansu_Tianshui_load.csv",
+        "Hotel:./data/load/Hotel_Gansu_Tianshui_load.csv",
+        "Restaurant:./data/load/Restaurant_Gansu_Tianshui_load.csv",
+        "Office:./data/load/Office_Gansu_Tianshui_load.csv"
+    ],
+    "广东省": [
+        "Apartment:./data/load/Apartment_Guangdong_Shenzhen_load.csv",
+        "Hotel:./data/load/Hotel_Guangdong_Shenzhen_load.csv",
+        "Restaurant:./data/load/Restaurant_Guangdong_Shenzhen_load.csv",
+        "Office:./data/load/Office_Guangdong_Shenzhen_load.csv"
+    ],
+    "广西壮族自治区": [
+        "Apartment:./data/load/Apartment_Guangxi_Guilin_load.csv",
+        "Hotel:./data/load/Hotel_Guangxi_Guilin_load.csv",
+        "Restaurant:./data/load/Restaurant_Guangxi_Guilin_load.csv",
+        "Office:./data/load/Office_Guangxi_Guilin_load.csv"
+    ],
+    "贵州省": [
+        "Apartment:./data/load/Apartment_Guizhou_Guiyang_load.csv",
+        "Hotel:./data/load/Hotel_Guizhou_Guiyang_load.csv",
+        "Restaurant:./data/load/Restaurant_Guizhou_Guiyang_load.csv",
+        "Office:./data/load/Office_Guizhou_Guiyang_load.csv"
+    ],
+    "河北省": [
+        "Apartment:./data/load/Apartment_Hebei_Shijiazhuang_load.csv",
+        "Hotel:./data/load/Hotel_Hebei_Shijiazhuang_load.csv",
+        "Restaurant:./data/load/Restaurant_Hebei_Shijiazhuang_load.csv",
+        "Office:./data/load/Office_Hebei_Shijiazhuang_load.csv"
+    ],
+    "黑龙江省": [
+        "Apartment:./data/load/Apartment_Heilongjiang_Haerbin_load.csv",
+        "Hotel:./data/load/Hotel_Heilongjiang_Haerbin_load.csv",
+        "Restaurant:./data/load/Restaurant_Heilongjiang_Haerbin_load.csv",
+        "Office:./data/load/Office_Heilongjiang_Haerbin_load.csv"
+    ],
+    "湖北省": [
+        "Apartment:./data/load/Apartment_Hubei_Wuhan_load.csv",
+        "Hotel:./data/load/Hotel_Hubei_Wuhan_load.csv",
+        "Restaurant:./data/load/Restaurant_Hubei_Wuhan_load.csv",
+        "Office:./data/load/Office_Hubei_Wuhan_load.csv"
+    ],
+    "湖南省": [
+        "Apartment:./data/load/Apartment_Hunan_Changsha_load.csv",
+        "Hotel:./data/load/Hotel_Hunan_Changsha_load.csv",
+        "Restaurant:./data/load/Restaurant_Hunan_Changsha_load.csv",
+        "Office:./data/load/Office_Hunan_Changsha_load.csv"
+    ],
+    "吉林省": [
+        "Apartment:./data/load/Apartment_Jilin_Changchun_load.csv",
+        "Hotel:./data/load/Hotel_Jilin_Changchun_load.csv",
+        "Restaurant:./data/load/Restaurant_Jilin_Changchun_load.csv",
+        "Office:./data/load/Office_Jilin_Changchun_load.csv"
+    ],
+    "江苏省": [
+        "Apartment:./data/load/Apartment_Jiangsu_Nanjing_load.csv",
+        "Hotel:./data/load/Hotel_Jiangsu_Nanjing_load.csv",
+        "Restaurant:./data/load/Restaurant_Jiangsu_Nanjing_load.csv",
+        "Office:./data/load/Office_Jiangsu_Nanjing_load.csv"
+    ],
+    "江西省": [
+        "Apartment:./data/load/Apartment_Jiangxi_Nanchang_load.csv",
+        "Hotel:./data/load/Hotel_Jiangxi_Nanchang_load.csv",
+        "Restaurant:./data/load/Restaurant_Jiangxi_Nanchang_load.csv",
+        "Office:./data/load/Office_Jiangxi_Nanchang_load.csv"
+    ],
+    "辽宁省": [
+        "Apartment:./data/load/Apartment_Liaoning_Dalian_load.csv",
+        "Hotel:./data/load/Hotel_Liaoning_Dalian_load.csv",
+        "Restaurant:./data/load/Restaurant_Liaoning_Dalian_load.csv",
+        "Office:./data/load/Office_Liaoning_Dalian_load.csv"
+    ],
+    "内蒙古自治区": [
+        "Apartment:./data/load/Apartment_Neimeng_Huhehaote_load.csv",
+        "Hotel:./data/load/Hotel_Neimeng_Huhehaote_load.csv",
+        "Restaurant:./data/load/Restaurant_Neimeng_Huhehaote_load.csv",
+        "Office:./data/load/Office_Neimeng_Huhehaote_load.csv"
+    ],
+    "青海省": [
+        "Apartment:./data/load/Apartment_Qinghai_Xining_load.csv",
+        "Hotel:./data/load/Hotel_Qinghai_Xining_load.csv",
+        "Restaurant:./data/load/Restaurant_Qinghai_Xining_load.csv",
+        "Office:./data/load/Office_Qinghai_Xining_load.csv"
+    ],
+    "山东省": [
+        "Apartment:./data/load/Apartment_Shandong_Qingdao_load.csv",
+        "Hotel:./data/load/Hotel_Shandong_Qingdao_load.csv",
+        "Restaurant:./data/load/Restaurant_Shandong_Qingdao_load.csv",
+        "Office:./data/load/Office_Shandong_Qingdao_load.csv"
+    ],
+    "山西省": [
+        "Apartment:./data/load/Apartment_Shanxi_Taiyuan_load.csv",
+        "Hotel:./data/load/Hotel_Shanxi_Taiyuan_load.csv",
+        "Restaurant:./data/load/Restaurant_Shanxi_Taiyuan_load.csv",
+        "Office:./data/load/Office_Shanxi_Taiyuan_load.csv"
+    ],
+    "陕西省": [
+        "Apartment:./data/load/Apartment_Shanxi_Xian_load.csv",
+        "Hotel:./data/load/Hotel_Shanxi_Xian_load.csv",
+        "Restaurant:./data/load/Restaurant_Shanxi_Xian_load.csv",
+        "Office:./data/load/Office_Shanxi_Xian_load.csv"
+    ],
+    "上海市": [
+        "Apartment:./data/load/Apartment_Shanghai_load.csv",
+        "Hotel:./data/load/Hotel_Shanghai_load.csv",
+        "Restaurant:./data/load/Restaurant_Shanghai_load.csv",
+        "Office:./data/load/Office_Shanghai_load.csv"
+    ],
+    "四川省": [
+        "Apartment:./data/load/Apartment_Sichuan_Chengdu_load.csv",
+        "Hotel:./data/load/Hotel_Sichuan_Chengdu_load.csv",
+        "Restaurant:./data/load/Restaurant_Sichuan_Chengdu_load.csv",
+        "Office:./data/load/Office_Sichuan_Chengdu_load.csv"
+    ],
+    "天津市": [
+        "Apartment:./data/load/Apartment_Tianjin_load.csv",
+        "Hotel:./data/load/Hotel_Tianjin_load.csv",
+        "Restaurant:./data/load/Restaurant_Tianjin_load.csv",
+        "Office:./data/load/Office_Tianjin_load.csv"
+    ],
+    "西藏自治区": [
+        "Apartment:./data/load/Apartment_Xizang_Lasa_load.csv",
+        "Hotel:./data/load/Hotel_Xizang_Lasa_load.csv",
+        "Restaurant:./data/load/Restaurant_Xizang_Lasa_load.csv",
+        "Office:./data/load/Office_Xizang_Lasa_load.csv"
+    ],
+    "香港特别行政区": [
+        "Apartment:./data/load/Apartment_Hongkong_load.csv",
+        "Hotel:./data/load/Hotel_Hongkong_load.csv",
+        "Restaurant:./data/load/Restaurant_Hongkong_load.csv",
+        "Office:./data/load/Office_Hongkong_load.csv"
+    ],
+    "新疆维吾尔自治区": [
+        "Apartment:./data/load/Apartment_Xinjiang_Wulumuqi_load.csv",
+        "Hotel:./data/load/Hotel_Xinjiang_Wulumuqi_load.csv",
+        "Restaurant:./data/load/Restaurant_Xinjiang_Wulumuqi_load.csv",
+        "Office:./data/load/Office_Xinjiang_Wulumuqi_load.csv"
+    ],
+    "云南省": [
+        "Apartment:./data/load/Apartment_Yunnan_Kunming_load.csv",
+        "Hotel:./data/load/Hotel_Yunnan_Kunming_load.csv",
+        "Restaurant:./data/load/Restaurant_Yunnan_Kunming_load.csv",
+        "Office:./data/load/Office_Yunnan_Kunming_load.csv"
+    ],
+    "浙江省": [
+        "Apartment:./data/load/Apartment_Zhejiang_Hangzhou_load.csv",
+        "Hotel:./data/load/Hotel_Zhejiang_Hangzhou_load.csv",
+        "Restaurant:./data/load/Restaurant_Zhejiang_Hangzhou_load.csv",
+        "Office:./data/load/Office_Zhejiang_Hangzhou_load.csv"
+    ],
+    "重庆市": [
+        "Apartment:./data/load/Apartment_Chongqing_load.csv",
+        "Hotel:./data/load/Hotel_Chongqing_load.csv",
+        "Restaurant:./data/load/Restaurant_Chongqing_load.csv",
+        "Office:./data/load/Office_Chongqing_load.csv"
+    ]
+}
