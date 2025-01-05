@@ -1,3 +1,11 @@
+'''
+Author: guo_MateBookPro 867718012@qq.com
+Date: 2025-01-03 11:27:48
+LastEditTime: 2025-01-03 14:00:45
+LastEditors: guo_MateBookPro 867718012@qq.com
+FilePath: /ChickenPlan4LLM/main.py
+Description: 雪花掩盖着哽咽叹息这离别
+'''
 import time
 import random
 
@@ -34,7 +42,8 @@ if __name__ == '__main__':
     with open("data/parameters.json", encoding="utf-8") as load_file:
         input_json = json.load(load_file)
     # 读负荷csv
-    load = read_load(input_json["load"]["building_type"])
+    # load = read_load(input_json["load"]["building_type"])
+    load = read_load(input_json["load"]["building_type"], file_load = "./data/load_data/Shannxi_Yulin_system.csv")
     planning_json, operation_json, device_cap = planning_problem(load, input_json)
     save_json(planning_json, "planning_json")
     pprint.pprint(device_cap)
