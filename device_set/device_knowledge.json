@@ -109,7 +109,7 @@
     "约束": [["蓄水箱装机容量 m_tank_installed 不得大于其最大装机容量 m_tank_max", "h_{inst}^{hst}\\le h_{max}^{hst}"],
             ["调度周期\\param{period}内各时段热水箱（蓄水箱储热时）供热量\\var{g_ht[t]}等于热水箱储热变化量\\var{delta_g_ht[t]}的负值减去其热损失量\\var{g_ht_loss[t]}", "\\bigtriangleup h_{t}^{hst}= h_{t+1}^{hst}- h_{t}^{hst}"],
             ["调度周期\\param{period}内各时段热水箱热损失量\\var{g_ht_loss[t]}等于热损失系数\\param{mu_tank_loss}、水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和当前时刻水箱水温\\var{t_ht[t]}与环境温度（最低水温）\\param{t_ht_min}的差值的乘积", "h_{t}^{hst}\\le h_{inst}^{hst}"],
-            ["除最后一个时段外，调度周期\param{period}内各时段热水箱储热变化量\var{delta_g_ht[t]}等于水的比热 c_water、水箱中水的质量\var{m_tank_inst}和水箱中水温变化量（下一时刻水温\var{t_ht[t+1]减去当前时刻水温\var{t_ht[t]}）的乘积", ",h_{t}^{hst}\\le h_{inst}^{hst}"],
+            ["除最后一个时段外，调度周期\\param{period}内各时段热水箱储热变化量\\var{delta_g_ht[t]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（下一时刻水温\\var{t_ht[t+1]减去当前时刻水温\\var{t_ht[t]}）的乘积", ",h_{t}^{hst}\\le h_{inst}^{hst}"],
             ["最后一个时段热水箱储热变化量\\var{delta_g_ht[-1]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（初始时刻水温\\var{t_ht[0]减去当前时刻水温\\var{t_ht[-1]}）的乘积，以保证调度周期结束时热水箱储热量与初始时刻储热量一致", ""]]
 
   },
@@ -123,6 +123,7 @@
             ["储氢罐储氢变化量 h_delta_hst 等于下一时刻储氢罐储氢量 h_hst_next 减去当前时刻储氢罐储氢量 h_hst", "\\bigtriangleup h_{t}^{hst}= h_{t+1}^{hst}- h_{t}^{hst}"],
             ["储氢罐储氢量 h_hst 不得大于其装机容量 h_hst_inst", "h_{t}^{hst}\\le h_{inst}^{hst}"]]
 
+}
 }
 
 
