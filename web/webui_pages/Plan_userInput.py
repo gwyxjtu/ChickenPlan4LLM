@@ -30,6 +30,12 @@ import streamlit as st
 from streamlit_ace import st_ace
 import json
 
+with open("device_set/ggp_knowledge_set.json", "r", encoding="utf-8") as f:
+    ggp_konwledge = json.load(f)
+with open("device_set/device_knowledge.json", "r", encoding="utf-8") as f:
+    device_konwledge = json.load(f)
+with open("device_set/load_knowledge_set.json", "r", encoding="utf-8") as f:
+    load_konwledge = json.load(f)
 
 def plan_userInput(client):
     col1, col2 = st.columns(2)
@@ -37,7 +43,7 @@ def plan_userInput(client):
         description = {
             "地理位置": st.selectbox("地理位置", options=user_input_json["地理位置"]),
             "建筑类型": st.selectbox("建筑类型", options=user_input_json["建筑类型"]),
-            "建筑面积": st.selectbox("建筑面积", options=user_input_json["建筑面积"]),
+            # "建筑面积": st.selectbox("建筑面积", options=user_input_json["建筑面积"]),
             "可再生能源设备需求": st.multiselect("可再生能源设备需求", options=user_input_json["可再生能源设备需求"]),
             "供热设备需求": st.multiselect("供热设备需求", options=user_input_json["供热设备需求"]),
             "供冷设备需求": st.multiselect("供冷设备需求", options=user_input_json["供冷设备需求"])
@@ -64,11 +70,21 @@ def page_user2json(client):
     @st.dialog("stream")
     def generate_json():
         user_input = st.session_state.description
+        selected_devices = user_input.get("可再生能源设备需求", []) + user_input.get("供热设备需求", []) + user_input.get("供冷设备需求", [])
+        filtered_device_knowledge = {k: v for k, v in device_konwledge.items() 
+                                           if k in selected_devices}
+        # print(filtered_device_knowledge)
+        
         if user_input:
             info_sys_prompt = info_prompt_template[0]
             info_user_prompt = info_prompt_template[1].format(
                 example_user_input=json.dumps(example_user_input, ensure_ascii=False),
                 example_output=json.dumps(example_info_output, ensure_ascii=False),
+                # Filter device knowledge based on user's selected equipment
+                know_input=json.dumps({
+                    "device_knowledge": filtered_device_knowledge,
+                    "ggp_knowledge": ggp_konwledge
+                }, ensure_ascii=False),
                 user_input=json.dumps(user_input, ensure_ascii=False)
             )
             completion = call_openai_stream(
@@ -115,14 +131,28 @@ def page_user2json(client):
     # 主内容区域
     col1, col2 = st.columns(2)
     with col1:
+        st.subheader("基本信息")
         description = {
             "地理位置": st.multiselect("地理位置", options=user_input_json["地理位置"], key="geo_loc", max_selections=1),
             "建筑类型": st.multiselect("建筑类型", options=user_input_json["建筑类型"], key="build_type", max_selections=1),
-            "建筑面积": st.multiselect("建筑面积", options=user_input_json["建筑面积"], key="build_area", max_selections=1),
+            # "建筑面积": st.multiselect("建筑面积", options=user_input_json["建筑面积"], key="build_area", max_selections=1),
             "可再生能源设备需求": st.multiselect("可再生能源设备需求", options=user_input_json["可再生能源设备需求"], key="renewable"),
             "供热设备需求": st.multiselect("供热设备需求", options=user_input_json["供热设备需求"], key="heating"),
             "供冷设备需求": st.multiselect("供冷设备需求", options=user_input_json["供冷设备需求"], key="cooling")
         }
+        
+        st.subheader("详细参数")
+        detail_description = {
+            "冷负荷峰值": st.number_input("冷负荷峰值 (kW)", min_value=0, value=100000, step=1000, key="cold_peak"),
+            "热负荷峰值": st.number_input("热负荷峰值 (kW)", min_value=0, value=200000, step=1000, key="heat_peak"),
+            "电负荷峰值": st.number_input("电负荷峰值 (kW)", min_value=0, value=50000, step=1000, key="power_peak"),
+            "建筑面积": st.number_input("建筑面积 (m²)", min_value=0, value=120000, step=1000, key="area"),
+            "年总收益": st.number_input("年总收益 (元)", min_value=0, value=5000000, step=100000, key="annual_revenue"),
+            "分时电价": [0.5] * 28,  # 保持原有的24小时电价格式
+            "氢气价格": st.number_input("氢气价格 (元/kg)", min_value=0.0, value=20.0, step=0.1, key="h2_price"),
+            "天然气价格": st.number_input("天然气价格 (元/m³)", min_value=0.0, value=50.0, step=0.1, key="gas_price")
+        }
+        description.update(detail_description)
         c1, c2, c3 = st.columns(3)
         with c1:
             st.button("保存描述", on_click=save_description, args=(description,), use_container_width=True)

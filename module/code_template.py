@@ -7,17 +7,47 @@ import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
 
-
 def read_load(building_type, file_load=""):
-    load_path = project_path + "/data/load_data/"
-    if file_load == "":
-        root, dirs, files = next(os.walk(load_path))
-        for file in files:
-            if building_type in file:
-                file_load = load_path + file
-    load = pd.read_csv(file_load)
-    return {{'p_load': load['Electricity Load [J]'], 'g_load': load['Heating Load [J]'],
-            'q_load': load['Cooling Load [J]'], 'r_solar': load['Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)']}}
+    if not building_type:
+        raise ValueError("building_type cannot be empty")
+
+    load_path = os.path.join(project_path, "data", "load_data")
+    if not os.path.exists(load_path):
+        raise FileNotFoundError(f"Load data directory not found: {load_path}")
+
+    if not file_load:
+        try:
+            root, dirs, files = next(os.walk(load_path))
+            matching_files = [f for f in files if building_type in f and f.endswith('.csv')]
+            if not matching_files:
+                raise FileNotFoundError(f"No load file found for building type: {building_type}")
+            file_load = os.path.join(load_path, matching_files[0])
+        except StopIteration:
+            raise FileNotFoundError(f"Failed to read directory: {load_path}")
+
+    try:
+        load = pd.read_csv(file_load)
+        required_columns = [
+            'Electricity Load [J]',
+            'Heating Load [J]',
+            'Cooling Load [J]',
+            'Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)'
+        ]
+        missing_columns = [col for col in required_columns if col not in load.columns]
+        if missing_columns:
+            raise KeyError(f"Missing required columns in CSV: {', '.join(missing_columns)}")
+
+        return {
+            'p_load': load['Electricity Load [J]'],
+            'g_load': load['Heating Load [J]'],
+            'q_load': load['Cooling Load [J]',
+            'r_solar': load['Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)']
+        }
+    except pd.errors.EmptyDataError:
+        raise ValueError(f"CSV file is empty: {file_load}")
+    except Exception as e:
+        raise Exception(f"Error reading load file {file_load}: {str(e)}")
+
 
 
 {solver_code}

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
+# from module.LLM import example_code_output
 # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体，确保系统已安装
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题

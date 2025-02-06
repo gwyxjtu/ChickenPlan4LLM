@@ -9,6 +9,45 @@ from module.LLM import (
     example_code_output
 )
 from module import call_openai_stream
+from module import code_template
+import traceback
+
+import os
+import sys
+
+def exec_opt():
+    project_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    project_path = project_path.replace("\\", "/")
+
+    local_env = {"project_path": project_path}
+
+    solver_code = example_code_output
+
+    code_to_execute = code_template.format(solver_code=solver_code)
+
+    print("=" * 80)
+    print("Code to execute:")
+    print("=" * 80)
+    print(code_to_execute)
+    # save
+    with open("tmp.py", "w", encoding="utf-8") as f:
+        f.write(code_to_execute)
+    print("=" * 80)
+    print("Executing code ...")
+    print("=" * 80)
+    try:
+        exec(code_to_execute, local_env, local_env)
+        print("=" * 80)
+        print("Execution successful.")
+        print("=" * 80)
+        print("local_env contents:")
+        for key, _ in local_env.items():
+            print(key)
+
+    except Exception as e:
+        # 捕获并打印详细的异常信息
+        print("An error occurred during execution:")
+        print(traceback.format_exc())
 
 def page_param2code(client):
     
@@ -98,4 +137,4 @@ def page_param2code(client):
     st.session_state.code = code
 
     # 运行按钮
-    st.button("运行代码", use_container_width=True, type="primary")
+    st.button("运行代码", on_click=exec_opt, use_container_width=True, type="primary")

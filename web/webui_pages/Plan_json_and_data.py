@@ -1,7 +1,7 @@
 '''
 Author: guo_MateBookPro 867718012@qq.com
 Date: 2025-01-09 16:43:35
-LastEditTime: 2025-02-04 02:18:01
+LastEditTime: 2025-02-06 22:21:13
 LastEditors: guo_MateBookPro 867718012@qq.com
 FilePath: /ChickenPlan4LLM/web/webui_pages/Plan_json_and_data.py
 Description: 雪花掩盖着哽咽叹息这离别
@@ -71,6 +71,15 @@ def page_json2param(client):
                         st.session_state.parameters = full_response
         else:
             st.warning("问题描述或JSON描述缺失")
+        # write json
+        try:
+            # Parse the JSON string to ensure valid format
+            json_data = json.loads(st.session_state.parameters)
+            # Write the parsed JSON with standard formatting
+            with open("web/data/parameters.json", "w", encoding="utf-8") as f:
+                json.dump(json_data, f, ensure_ascii=False, indent=4)
+        except json.JSONDecodeError:
+            st.error("Invalid JSON format in parameters")
 
     col1, col2 = st.columns(2)
     with col1:
