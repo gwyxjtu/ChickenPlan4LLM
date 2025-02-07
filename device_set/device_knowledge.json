@@ -9,10 +9,10 @@
             ["氢燃料电池电转换效率", "k_{p}^{fc}", "k_fc_p"],
             ["氢燃料电池热交换效率", "\\eta ^{fc}", "eta_fc"],
             ["氢燃料电池热转换效率", "k_{g}^{fc}", "k_fc_g"]],
-    "约束": [["氢燃料电池装机容量 p_fc_inst 不得大于其最大装机容量 p_fc_max", "p_{inst}^{fc}\\le p_{max}^{fc}"],
-            ["氢燃料电池产电量 p_fc 等于其电转换效率 k_fc_p 和耗氢量 h_fc 的乘积", "p_{t}^{fc}= k_{p}^{fc}\\times  h_{t}^{fc}"],
-            ["氢燃料电池产热量 g_fc 等于其热交换效率 eta_fc、热转换效率 k_fc_g 和耗氢量 h_fc 的乘积", "g_{t}^{fc}= \\eta ^{fc}\\times  k_{g}^{fc}\\times h_{t}^{fc}"],
-            ["氢燃料电池发电量 p_fc 不得大于其装机容量 p_fc_inst", "p_{t}^{fc}\\le p_{inst}^{fc}"]]
+    "约束": [["氢燃料电池装机容量\\var{p_fc_inst}不得大于其最大装机容量\\param{p_fc_max}", "p_{inst}^{fc}\\le p_{max}^{fc}"],
+            ["氢燃料电池产电量\\var{p_fc[t]}等于其电转换效率\\param{k_fc_p}和耗氢量\\var{h_fc[t]}的乘积", "p_{t}^{fc}= k_{p}^{fc}\\times  h_{t}^{fc}"],
+            ["氢燃料电池产热量\\var{g_fc[t]}等于其热交换效率\\param{eta_fc}、热转换效率\\param{k_fc_g}和耗氢量\\var{h_fc[t]}的乘积", "g_{t}^{fc}= \\eta ^{fc}\\times  k_{g}^{fc}\\times h_{t}^{fc}"],
+            ["氢燃料电池发电量\\var{p_fc[t]}不得大于其装机容量\\var{p_fc_inst}", "p_{t}^{fc}\\le p_{inst}^{fc}"]]
   },
   "光伏板":
   {
@@ -21,18 +21,18 @@
     "参数": [["光伏板最大装机容量", "p_{max}^{pv}", "p_pv_max"],
             ["光伏板转换效率", "k^{pv}", "k_pv"],
             ["当前太阳辐射强度", "r_{t}^{solar}", "r_solar"]],
-    "约束": [["光伏板装机容量 p_pv_inst 不得大于其最大装机容量 p_pv_max", "p_{inst}^{pv}\\le p_{max}^{pv}"],
-            ["光伏板产电量 p_pv 不得大于其转换效率 k_pv、装机容量 p_pv_inst 和当前太阳辐射强度 r_solar 的乘积", "p_{t}^{pv}\\le k^{pv}\\times r_{t}^{solar}\\times p_{inst}^{pv}"]]
+    "约束": [["光伏板装机容量\\var{p_pv_inst}不得大于其最大装机容量\\param{p_pv_max}", "p_{inst}^{pv}\\le p_{max}^{pv}"],
+            ["光伏板产电量\\var{p_pv[t]}不得大于其转换效率\\param{k_pv}、装机容量\\var{s_pv_inst}和当前太阳辐射强度\\param{r_solar[t]}的乘积", "p_{t}^{pv}\\le k^{pv}\\times r_{t}^{solar}\\times p_{inst}^{pv}"]]
   },
   "太阳能集热器":
   {
-    "变量": [["太阳能集热器装机容量", "g_{inst}^{sc}", "g_sc_inst"],
+    "变量": [["太阳能集热器装机容量", "s_{inst}^{sc}", "s_sc_inst"],
             ["太阳能集热器产热量", "g_{t}^{sc}", "g_sc"]],
     "参数": [["太阳能集热器转换效率", "k^{sc}", "k_sc"],
-            ["太阳能集热器最大装机容量", "g_{max}^{sc}", "g_sc_max"],
+            ["太阳能集热器最大装机容量", "s_{max}^{sc}", "s_sc_max"],
             ["当前太阳辐射强度", "r_{t}^{solar}", "r_solar"]],
-    "约束": [["太阳能集热器装机容量 g_sc_inst 不得大于其最大装机容量 g_sc_max", "g_{inst}^{sc}\\le g_{max}^{sc}"],
-            ["太阳能集热器产热量 g_sc 不得大于其转换效率 k_sc、装机容量 g_sc_inst 和当前太阳辐射强度 r_solar 的乘积", "g_{t}^{sc}\\le k^{sc}\\times r_{t}^{solar}\\times g_{inst}^{sc}"]]
+    "约束": [["太阳能集热器装机容量\\var{s_sc_inst}不得大于其最大装机容量\\param{s_sc_max}", "s_{inst}^{sc}\\le s_{max}^{sc}"],
+            ["太阳能集热器产热量\\var{g_sc[t]}不得大于其转换效率\\param{k_sc}、装机容量\\var{s_sc_inst}和当前太阳辐射强度\\param{r_solar[t]}的乘积", "g_{t}^{sc}\\le k^{sc}\\times r_{t}^{solar}\\times s_{inst}^{sc}"]]
   },
   "电解槽":
   {
@@ -41,9 +41,9 @@
             ["电解槽耗电量", "p_{t}^{el}", "p_el"]],
     "参数": [["电解槽最大装机容量", "p_{max}^{el}", "p_el_max"],
             ["电解槽转换效率", "k^{el}", "k_el"]],
-    "约束": [["电解槽装机容量 p_el_inst 不得大于其最大装机容量 p_el_max", "p_{inst}^{el}\\le p_{max}^{el}"],
-            ["电解槽产氢量 h_el 不得大于其转换效率 k_el 和电解槽耗电量 p_el 的乘积", "h_{t}^{el}\\le k^{el}\\times p_{t}^{el}"],
-            ["电解槽耗电量 p_el 不得大于其装机容量 p_el_inst", "p_{t}^{el}\\le p_{inst}^{el}"]]
+    "约束": [["电解槽装机容量\\var{p_el_inst}不得大于其最大装机容量\\param{p_el_max}", "p_{inst}^{el}\\le p_{max}^{el}"],
+            ["电解槽产氢量\\var{h_el[t]}不得大于其转换效率\\param{k_el}和电解槽耗电量\\var{p_el[t]}的乘积", "h_{t}^{el}\\le k^{el}\\times p_{t}^{el}"],
+            ["电解槽耗电量\\var{p_el[t]}不得大于其装机容量\\var{p_el_inst}", "p_{t}^{el}\\le p_{inst}^{el}"]]
   },
   "电锅炉":
   {
@@ -52,9 +52,9 @@
             ["电锅炉耗电量", "p_{t}^{eb}", "p_eb"]],
     "参数": [["电锅炉最大装机容量", "p_{max}^{eb}", "p_eb_max"],
             ["电锅炉转换效率", "k^{eb}", "k_eb"]],
-    "约束": [["电锅炉装机容量 p_eb_inst 不得大于其最大装机容量 p_eb_max", "p_{inst}^{eb}\\le p_{max}^{eb}"],
-            ["电锅炉产热量 g_eb 等于其转换效率 k_eb 和耗电量 p_eb 的乘积", "g_{t}^{eb}= k^{eb}\\times p_{t}^{eb}"],
-            ["电锅炉耗电量 p_eb 不得大于其装机容量 p_eb_inst", "p_{t}^{eb}\\le p_{inst}^{eb}"]]
+    "约束": [["电锅炉装机容量\\var{p_eb_inst}不得大于其最大装机容量\\param{p_eb_max}", "p_{inst}^{eb}\\le p_{max}^{eb}"],
+            ["电锅炉产热量\\var{g_eb[t]}等于其转换效率\\param{k_eb}和耗电量\\var{p_eb[t]}的乘积", "g_{t}^{eb}= k^{eb}\\times p_{t}^{eb}"],
+            ["电锅炉耗电量\\var{p_eb[t]}不得大于其装机容量\\var{p_eb_inst}", "p_{t}^{eb}\\le p_{inst}^{eb}"]]
   },
   "热泵":
   {
@@ -66,10 +66,10 @@
     "参数": [["热泵最大装机容量", "p_{max}^{hp}", "p_hp_max"],
             ["热泵热转换效率", "k_{g}^{hp}", "k_hp_g"],
             ["热泵冷转换效率", "k_{q}^{hp}", "k_hp_q"]],
-    "约束": [["热泵装机容量 p_hp_inst 不得大于其最大装机容量 p_hp_max", "p_{inst}^{hp}\\le p_{max}^{hp}"],
-            ["热泵产热量 g_hp 等于其热转换效率 k_hp_g 和耗电量 p_hp 的乘积", "g_{t}^{hp}= k_{g}^{hp}\\times p_{t}^{hp}"],
-            ["热泵产冷量 q_hp 等于其冷转换效率 k_hp_q 和耗电量 p_hp 的乘积", "q_{t}^{hp}= k_{q}^{hp}\\times p_{t}^{hp}"],
-            ["热泵耗电量 p_hp 不得大于其装机容量 p_hp_inst", "p_{t}^{hp}\\le p_{inst}^{hp}"]]
+    "约束": [["热泵装机容量\\var{p_hp_inst}不得大于其最大装机容量\\param{p_hp_max}", "p_{inst}^{hp}\\le p_{max}^{hp}"],
+            ["热泵产热量\\var{g_hp[t]}不得大于其热转换效率\\param{k_hp_g}和耗电量\\var{p_hp[t]}的乘积", "g_{t}^{hp}\\le k_{g}^{hp}\\times p_{t}^{hp}"],
+            ["热泵产冷量\\var{q_hp[t]}不得大于其冷转换效率\\param{k_hp_q}和耗电量\\var{p_hp[t]}的乘积", "q_{t}^{hp}\\le k_{q}^{hp}\\times p_{t}^{hp}"],
+            ["热泵耗电量\\var{p_hp[t]}不得大于其装机容量\\var{p_hp_inst}", "p_{t}^{hp}\\le p_{inst}^{hp}"]]
   },
   "地源热泵":
   {
@@ -84,46 +84,55 @@
             ["地源热泵冷转换效率", "k_{q}^{ghp}", "k_ghp_q"],
             ["地热井可产热量", "g^{gtw}", "g_gtw"]
     ],
-    "约束": [["地源热泵装机容量 p_ghp_inst 不得大于其最大装机容量 p_ghp_max", "p_{inst}^{ghp}\\le p_{max}^{ghp}"],
-            ["地源热泵产热量 g_ghp 等于其热转换效率 k_ghp_g 和耗电量 p_ghp 的乘积", "g_{t}^{ghp}= k_{g}^{ghp}\\times p_{t}^{ghp}"],
-            ["地源热泵产冷量 q_ghp 等于其冷转换效率 k_ghp_q 和耗电量 p_ghp 的乘积", "q_{t}^{ghp}= k_{q}^{ghp}\\times p_{t}^{ghp}"],
-            ["地源热泵耗电量 p_ghp 不得大于其装机容量 p_ghp_inst", "p_{t}^{ghp}\\le p_{inst}^{ghp}"],
-            ["地缘热泵可以从所有地热井中取得的热量最大值（地热井装机数量\\\\var{num_gtw_inst} * 地热井可产热量\\\\param{g_gtw}）不得小于地源热泵最大产热量（地源热泵装机容量\\\\var{p_ghp_inst} * 其产热效率\\\\param{k_ghp_g}）", "num_{inst}^{gtw}\\times g^{gtw}\\ge p_{inst}^{ghp}\\times k_{g}^{ghp}"]]
+    "约束": [["地源热泵装机容量\\var{p_ghp_inst}不得大于其最大装机容量\\param{p_ghp_max}", "p_{inst}^{ghp}\\le p_{max}^{ghp}"],
+            ["地源热泵产热量\\var{g_ghp[t]}不得大于其热转换效率\\param{k_ghp_g}和耗电量\\var{p_ghp[t]}的乘积", "g_{t}^{ghp}\\le k_{g}^{ghp}\\times p_{t}^{ghp}"],
+            ["地源热泵产冷量\\var{q_ghp[t]}不得大于其冷转换效率\\param{k_ghp_q}和耗电量\\var{p_ghp[t]}的乘积", "q_{t}^{ghp}\\le k_{q}^{ghp}\\times p_{t}^{ghp}"],
+            ["地源热泵耗电量\\var{p_ghp[t]}不得大于其装机容量\\var{p_ghp_inst}", "p_{t}^{ghp}\\le p_{inst}^{ghp}"],
+            ["地缘热泵可以从所有地热井中取得的热量最大值（地热井装机数量\\var{num_gtw_inst} * 地热井可产热量\\param{g_gtw}）不得小于地源热泵最大产热量（地源热泵装机容量\\var{p_ghp_inst} * 其产热效率\\param{k_ghp_g}）", "num_{inst}^{gtw}\\times g^{gtw}\\ge p_{inst}^{ghp}\\times k_{g}^{ghp}"]]
   },
   "储氢罐":
   {
     "变量": [["储氢罐装机容量", "h_{inst}^{hst}", "h_hst_inst"],
-            ["储氢罐储氢变化量", "\\bigtriangleup h_{t}^{hst}", "h_delta_hst"],
+            ["储氢罐储氢变化量", "\\Delta h_{t}^{hst}", "delta_h_hst"],
             ["储氢罐储氢量", "h_{t}^{hst}", "h_hst"]],
     "参数": [["储氢罐最大装机容量", "h_{max}^{hst}", "h_hst_max"]],
-    "约束": [["储氢罐装机容量 h_hst_inst 不得大于其最大装机容量 h_hst_max", "h_{inst}^{hst}\\le h_{max}^{hst}"],
-            ["储氢罐储氢变化量 h_delta_hst 等于下一时刻储氢罐储氢量 h_hst_next 减去当前时刻储氢罐储氢量 h_hst", "\\bigtriangleup h_{t}^{hst}= h_{t+1}^{hst}- h_{t}^{hst}"],
-            ["储氢罐储氢量 h_hst 不得大于其装机容量 h_hst_inst", "h_{t}^{hst}\\le h_{inst}^{hst}"]]
+    "约束": [["储氢罐装机容量\\var{h_hst_inst}不得大于其最大装机容量\\param{h_hst_max}", "h_{inst}^{hst}\\le h_{max}^{hst}"],
+            ["除最后一个时段外，各时段储氢罐储氢变化量\\var{delta_h_hst[t]}等于下一时刻储氢罐储氢量\\var{h_hst[t+1]}减去当前时刻储氢罐储氢量\\var{h_hst[t]}", "\\Delta h_{t}^{hst}= h_{t+1}^{hst}- h_{t}^{hst}"],
+            ["最后一个时段储氢罐储氢变化量\\var{delta_h_hst[-1]}等于初始时刻储氢罐储氢量\\var{h_hst[0]}减去当前时刻储氢罐储氢量\\var{h_hst[-1]}，以保证调度周期结束时储氢罐储氢量与初始时刻储氢量一致", "\\Delta h_{-1}^{hst}= h_{0}^{hst}- h_{-1}^{hst}"],
+            ["储氢罐储氢量\\var{h_hst[t]}不得大于其装机容量\\var{h_hst_inst}", "h_{t}^{hst}\\le h_{inst}^{hst}"]]
   },
   "热水箱":
   {
-    "变量": [["储氢罐装机容量", "h_{inst}^{hst}", "h_hst_inst"],
-            ["储氢罐储氢变化量", "\\bigtriangleup h_{t}^{hst}", "h_delta_hst"],
-            ["储氢罐储氢量", "h_{t}^{hst}", "h_hst"]],
-    "参数": [["储氢罐最大装机容量", "h_{max}^{hst}", "h_hst_max"]],
-    "约束": [["蓄水箱装机容量 m_tank_installed 不得大于其最大装机容量 m_tank_max", "h_{inst}^{hst}\\le h_{max}^{hst}"],
-            ["调度周期\\param{period}内各时段热水箱（蓄水箱储热时）供热量\\var{g_ht[t]}等于热水箱储热变化量\\var{delta_g_ht[t]}的负值减去其热损失量\\var{g_ht_loss[t]}", "\\bigtriangleup h_{t}^{hst}= h_{t+1}^{hst}- h_{t}^{hst}"],
-            ["调度周期\\param{period}内各时段热水箱热损失量\\var{g_ht_loss[t]}等于热损失系数\\param{mu_tank_loss}、水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和当前时刻水箱水温\\var{t_ht[t]}与环境温度（最低水温）\\param{t_ht_min}的差值的乘积", "h_{t}^{hst}\\le h_{inst}^{hst}"],
-            ["除最后一个时段外，调度周期\\param{period}内各时段热水箱储热变化量\\var{delta_g_ht[t]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（下一时刻水温\\var{t_ht[t+1]减去当前时刻水温\\var{t_ht[t]}）的乘积", ",h_{t}^{hst}\\le h_{inst}^{hst}"],
-            ["最后一个时段热水箱储热变化量\\var{delta_g_ht[-1]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（初始时刻水温\\var{t_ht[0]减去当前时刻水温\\var{t_ht[-1]}）的乘积，以保证调度周期结束时热水箱储热量与初始时刻储热量一致", ""]]
-
+    "变量": [["蓄水箱装机容量", "m_{inst}^{tank}", "m_tank_inst"],
+            ["热水箱供热量", "g_{t}^{ht}", "g_ht"],
+            ["热水箱储热变化量", "\\Delta g_{t}^{ht}", "delta_g_ht"],
+            ["热水箱热损失量", "g_{t}^{ht,loss}", "g_ht_loss"],
+            ["热水箱水温", "t_{t}^{ht}", "t_ht"]
+    ],
+    "参数": [["蓄水箱最大装机容量", "m_{max}^{tank}", "m_tank_max"],
+            ["热水箱热损失系数", "\\mu _{loss}^{tank}", "mu_tank_loss"],
+            ["热水箱温度下限", "t_{min}^{ht}", "t_ht_min"]],
+    "约束": [["热水箱装机容量\\var{m_tank_inst}不得大于其装机上限\\param{m_tank_max}", "m_{inst}^{tank}\\le m_{max}^{tank}"],
+            ["各时段热水箱（蓄水箱储热时）供热量\\var{g_ht[t]}等于热水箱储热变化量\\var{delta_g_ht[t]}的负值减去其热损失量\\var{g_ht_loss[t]}", "g_{t}^{ht}=-\\Delta g_{t}^{ht}-g_{t}^{ht,loss}"],
+            ["各时段热水箱热损失量\\var{g_ht_loss[t]}等于热损失系数\\param{mu_tank_loss}、水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和当前时刻水箱水温\\var{t_ht[t]}与环境温度（最低水温）\\param{t_ht_min}的差值的乘积", "g_{t}^{ht,loss}=\\mu _{loss}^{tank}\\times c_{water}\\times m_{inst}^{tank}\\times (t_{t}^{ht}-t_{min}^{ht})"],
+            ["除最后一时段，各时段热水箱储热变化量\\var{delta_g_ht[t]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（下一时刻水温\\var{t_ht[t+1]减去当前时刻水温\\var{t_ht[t]}）的乘积", "\\Delta g_{t}^{ht}=c_{water}\\times m_{inst}^{tank}\\times (t_{t+1}^{ht}-t_{t}^{ht})"],
+            ["最后一个时段热水箱储热变化量\\var{delta_g_ht[-1]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（初始时刻水温\\var{t_ht[0]减去当前时刻水温\\var{t_ht[-1]}）的乘积，以保证调度周期结束时热水箱储热量与初始时刻储热量一致", "\\Delta g_{-1}^{ht}=c_{water}\\times m_{inst}^{tank}\\times (t_{0}^{ht}-t_{-1}^{ht})"]]
   },
   "冷水箱":
   {
-    "变量": [["储氢罐装机容量", "h_{inst}^{hst}", "h_hst_inst"],
-            ["储氢罐储氢变化量", "\\bigtriangleup h_{t}^{hst}", "h_delta_hst"],
-            ["储氢罐储氢量", "h_{t}^{hst}", "h_hst"]],
-    "参数": [["储氢罐最大装机容量", "h_{max}^{hst}", "h_hst_max"]],
-    "约束": [["蓄水箱装机容量 m_tank_installed 不得大于其最大装机容量 m_tank_max", "h_{inst}^{hst}\\le h_{max}^{hst}"],
-            ["储氢罐储氢变化量 h_delta_hst 等于下一时刻储氢罐储氢量 h_hst_next 减去当前时刻储氢罐储氢量 h_hst", "\\bigtriangleup h_{t}^{hst}= h_{t+1}^{hst}- h_{t}^{hst}"],
-            ["储氢罐储氢量 h_hst 不得大于其装机容量 h_hst_inst", "h_{t}^{hst}\\le h_{inst}^{hst}"]]
+    "变量": [["蓄水箱装机容量", "m_{inst}^{tank}", "m_tank_inst"],
+            ["冷水箱供热量", "q_{t}^{ct}", "q_ct"],
+            ["冷水箱储热变化量", "\\Delta q_{t}^{ct}", "delta_q_ct"],
+            ["冷水箱水温", "t_{t}^{ct}", "t_ct"]
+    ],
+    "参数": [["蓄水箱最大装机容量", "m_{max}^{tank}", "m_tank_max"]],
+    "约束": [["冷水箱装机容量\\var{m_tank_inst}不得大于其装机上限\\param{m_tank_max}", "m_{inst}^{tank}\\le m_{max}^{tank}"],
+            ["各时段冷水箱（蓄水箱储冷时）供冷量\\var{q_ct[t]}等于冷水箱储冷变化量\\var{delta_q_ct[t]}的负值，其冷损失量忽略不计", "q_{t}^{ct}=-\\Delta g_{t}^{ht}"],
+            ["除最后一时段，各时段冷水箱储冷变化量\\var{delta_q_ct[t]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（下一时刻水温\\var{t_ct[t+1]减去当前时刻水温\\var{t_ct[t]}）的乘积的负值", "\\Delta q_{t}^{ct}=-c_{water}\\times m_{inst}^{tank}\\times (t_{t+1}^{ct}-t_{t}^{ct})"],
+            ["最后一个时段冷水箱储冷变化量\\var{delta_q_ct[-1]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（初始时刻水温\\var{t_ct[0]减去当前时刻水温\\var{t_ct[-1]}）的乘积的负值，以保证调度周期结束时冷水箱储冷量与初始时刻储冷量一致", "\\Delta q_{-1}^{ct}=c_{water}\\times m_{inst}^{tank}\\times (t_{0}^{ct}-t_{-1}^{ct})"]]
+  }
+}
+}
 
-}
-}
 
 
