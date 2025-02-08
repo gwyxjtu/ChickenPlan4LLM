@@ -335,12 +335,6 @@ example_param_output = {
 example_param_input = example_param_output
 example_code_output = """
 def planning_problem(period_data, input_param):
-    \"\"\"规划问题求解
-
-    Args:
-        period_data (dict): 各时段数据，包括光照强度、电负荷、热负荷、冷负荷
-        input_param (dict): 输入参数，包括碳排放因子、能源价格、设备价格、设备效率等
-    \"\"\"
     # 常数
     c_water = 4.2 / 3600  # 水的比热容
     M = 1e7  # 大 M

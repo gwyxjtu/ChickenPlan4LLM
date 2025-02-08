@@ -95,6 +95,8 @@ code_prompt_template = [
 {example_info_input}
 **输入2，该优化问题所需参数**：
 {example_param_input}
+**输入3，该优化问题的领域知识**：
+{know_input}
 
 **输出**：
 {example_output}

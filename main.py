@@ -32,6 +32,7 @@ def read_load(building_type, file_load=""):
             'q_load': load['Cooling Load [J]'], 'r_solar': load['Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)']}
 
 
+
 def save_json(j, name, res_dict="./doc/"):
     with open(res_dict+name+".json", 'w', encoding="utf-8") as f:
         json.dump(j, f, ensure_ascii=False, indent=4)
@@ -47,3 +48,5 @@ if __name__ == '__main__':
     planning_json, operation_json, device_cap = planning_problem(load, input_json)
     save_json(planning_json, "planning_json")
     pprint.pprint(device_cap)
+
+

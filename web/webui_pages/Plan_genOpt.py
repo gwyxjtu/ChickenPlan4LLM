@@ -1,7 +1,14 @@
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+
+print(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 import json
 import streamlit as st
 from streamlit_ace import st_ace
 from constant import CODE_EDITOR_HEIGHT, MODEL
+
 from module.LLM import (
     code_prompt_template,
     example_info_input,
@@ -16,13 +23,13 @@ import os
 import sys
 
 def exec_opt():
-    project_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    project_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     project_path = project_path.replace("\\", "/")
 
     local_env = {"project_path": project_path}
-
-    solver_code = example_code_output
-
+    print(st.session_state.get('code'))
+    solver_code = st.session_state.code # if st.session_state.get('code') else example_code_output
+    
     code_to_execute = code_template.format(solver_code=solver_code)
 
     print("=" * 80)
@@ -64,8 +71,12 @@ def page_param2code(client):
                 example_param_input=json.dumps(example_param_input, ensure_ascii=False),
                 example_output=example_code_output,
                 info_input=json.dumps(info_input, ensure_ascii=False),
-                param_input=json.dumps(param_input, ensure_ascii=False)
+                param_input=json.dumps(param_input, ensure_ascii=False),
+                know_input = json.dumps({
+                    "device_knowledge": st.session_state.filtered_device_knowledge
+                }, ensure_ascii=False),
             )
+            print(code_user_prompt)
             completion = call_openai_stream(
                 client=client,
                 system_prompt=code_sys_prompt,
@@ -138,3 +149,7 @@ def page_param2code(client):
 
     # 运行按钮
     st.button("运行代码", on_click=exec_opt, use_container_width=True, type="primary")
+
+
+if __name__ == "__main__":
+    exec_opt()

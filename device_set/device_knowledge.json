@@ -82,7 +82,7 @@
     "参数": [["地源热泵最大装机容量", "p_{max}^{ghp}", "p_ghp_max"],
             ["地源热泵热转换效率", "k_{g}^{ghp}", "k_ghp_g"],
             ["地源热泵冷转换效率", "k_{q}^{ghp}", "k_ghp_q"],
-            ["地热井可产热量", "g^{gtw}", "g_gtw"]
+            ["单个地热井可产热量", "g^{gtw}", "g_gtw"]
     ],
     "约束": [["地源热泵装机容量\\var{p_ghp_inst}不得大于其最大装机容量\\param{p_ghp_max}", "p_{inst}^{ghp}\\le p_{max}^{ghp}"],
             ["地源热泵产热量\\var{g_ghp[t]}不得大于其热转换效率\\param{k_ghp_g}和耗电量\\var{p_ghp[t]}的乘积", "g_{t}^{ghp}\\le k_{g}^{ghp}\\times p_{t}^{ghp}"],

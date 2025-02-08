@@ -74,7 +74,7 @@ def page_user2json(client):
         filtered_device_knowledge = {k: v for k, v in device_konwledge.items() 
                                            if k in selected_devices}
         # print(filtered_device_knowledge)
-        
+        st.session_state.filtered_device_knowledge = filtered_device_knowledge
         if user_input:
             info_sys_prompt = info_prompt_template[0]
             info_user_prompt = info_prompt_template[1].format(
