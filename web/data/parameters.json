@@ -1,12 +1,12 @@
 {
     "load": {
-        "building_type": "Office",
+        "building_type": "Apartment",
         "p_max": 50000,
         "g_max": 200000,
         "q_max": 100000,
         "g_month": [],
         "q_month": [],
-        "p_area": 120000,
+        "p_area": 12000,
         "g_area": 0,
         "q_area": 0
     },
@@ -49,7 +49,7 @@
     "device": {
         "pv": {
             "_comment": "photovoltaic，光伏板",
-            "area_max": 0,
+            "area_max": 12000,
             "area_min": 0,
             "cost": 700,
             "life": 20,
@@ -65,7 +65,7 @@
         },
         "fc": {
             "_comment": "fuel cell，氢燃料电池",
-            "p_max": 0,
+            "p_max": 10000,
             "p_min": 0,
             "cost": 8000,
             "life": 10,
@@ -75,7 +75,7 @@
         },
         "el": {
             "_comment": "electrolyzer，电解槽",
-            "p_max": 0,
+            "p_max": 1000,
             "p_min": 0,
             "cost": 2240,
             "life": 7,
@@ -83,7 +83,7 @@
         },
         "eb": {
             "_comment": "electric boiler，电锅炉",
-            "p_max": 0,
+            "p_max": 10000,
             "p_min": 0,
             "cost": 500,
             "life": 10,
@@ -91,7 +91,7 @@
         },
         "hp": {
             "_comment": "heat pump，热泵",
-            "p_max": 0,
+            "p_max": 1000,
             "p_min": 0,
             "cost": 68000,
             "life": 15,
@@ -100,7 +100,7 @@
         },
         "ghp": {
             "_comment": "ground source heat pump，地源热泵",
-            "p_max": 0,
+            "p_max": 1000,
             "p_min": 0,
             "cost": 3000,
             "life": 15,
@@ -109,21 +109,21 @@
         },
         "gtw": {
             "_comment": "ground thermal well，地热井",
-            "number_max": 0,
+            "number_max": 2680,
             "cost": 20000,
             "life": 30,
-            "g_gtw": 0
+            "g_gtw": 7
         },
         "hst": {
             "_comment": "hydrogen storage tank，储氢罐",
-            "h_max": 0,
+            "h_max": 2000,
             "h_min": 0,
             "cost": 3000,
             "life": 15
         },
         "tank": {
             "_comment": "water tank，蓄水箱，用于储热（此时为热水箱（ht））或储冷（此时为冷水箱（ct））",
-            "m_max": 0,
+            "m_max": 10000,
             "m_min": 0,
             "cost": 0.5,
             "life": 20,

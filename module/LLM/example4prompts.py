@@ -449,6 +449,17 @@ def planning_problem(period_data, input_param):
     # 管网
     g_tube = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_tube{t}") for t in range(period)]  # 管网供热量
 
+    # 设备装机列表，只包含上文建模出现过的设备
+    device_inst_list = {
+        "电解槽":p_el_inst,
+        "光伏板":s_pv_inst,
+        "电锅炉":p_eb_inst,
+        "热泵":p_hp_inst,
+        "地源热泵":p_ghp_inst,
+        "地热井":num_gtw_inst,
+        "储氢罐":h_hst_inst,
+        "蓄水箱":m_tank_inst,
+    }
     # ------ Update model ------
     model.update()
 
@@ -500,13 +511,14 @@ def planning_problem(period_data, input_param):
     
     # --- 能量平衡约束 ---
     for t in range(period):
-        model.addConstr(p_pur[t] + p_pv[t] + p_fc[t] - p_sell[t] == p_load[t] + p_el[t] + p_eb[t] + p_hp[t] + p_ghp[t])  # 电平衡约束
+        model.addConstr(p_pur[t] + p_pv[t] + p_fc[t] - p_sell[t] == p_load[t] + p_el[t] + p_eb[t] + p_hp[t] + p_ghp[t])  # 电平衡约束，只能包含已有的变量
         # g_load 为 numpy 数组，不能单独放在约束的左侧；q_load 同理
         model.addConstr(g_tube[t] + g_ghp[t] == g_load[t])  # 热平衡约束
         model.addConstr(q_hp[t] + q_ghp[t] + q_ct[t] == q_load[t])  # 冷平衡约束
         model.addConstr(h_pur[t] + h_el[t] - h_fc[t] == delta_h_hst[t])  # 氢平衡约束
 
     # ------ Objective ------
+    # 年化投资费用，是每个设备的投资总和
     capex = (cost_pv * s_pv_inst / input_param["device"]["pv"]["life"]
              + cost_sc * s_sc_inst / input_param["device"]["sc"]["life"]
              + cost_fc * p_fc_inst / input_param["device"]["fc"]["life"]
@@ -516,10 +528,11 @@ def planning_problem(period_data, input_param):
              + cost_ghp * p_ghp_inst / input_param["device"]["ghp"]["life"]
              + cost_gtw * num_gtw_inst / input_param["device"]["gtw"]["life"]
              + cost_hst * h_hst_inst / input_param["device"]["hst"]["life"]
-             + cost_tank * m_tank_inst / input_param["device"]["tank"]["life"])  # 年化投资费用
+             + cost_tank * m_tank_inst / input_param["device"]["tank"]["life"])  
+    # 运行费用
     opex = (gp.quicksum([p_pur[t] * p_price[t] for t in range(period)])
             - gp.quicksum([p_sell[t] for t in range(period)]) * p_sell_price
-            + gp.quicksum([h_pur[t] for t in range(period)]) * h_price)  # 运行费用
+            + gp.quicksum([h_pur[t] for t in range(period)]) * h_price)  
     model.setObjective((capex + opex), GRB.MINIMIZE)
 """
 

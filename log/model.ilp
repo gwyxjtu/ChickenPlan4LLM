@@ -3,20 +3,11 @@
 Minimize
  
 Subject To
- R93737: q_hp4933 <= 0
- R93740: - 4.5 p_ghp4933 + q_ghp4933 <= 0
- R93741: - p_ghp_inst + p_ghp4933 <= 0
- R93744: q_ct4933 + delta_q_ct4933 = 0
- R194935: q_hp4933 + q_ghp4933 + q_ct4933 = 4667.50242574
- qc0: delta_q_ct4933 + [ - 0.00116666666666667 m_tank_inst * t_ct4933
-   + 0.00116666666666667 m_tank_inst * t_ct4934 ] = 0
+ R32219: q_cw4602 - 0.72 p_cw4602 = 0
+ R32220: - p_cw_inst + p_cw4602 <= 0
+ R75128: q_cw4602 = 220.1731994451283
 Bounds
- q_hp4933 free
- -infinity <= p_ghp_inst <= 1000
- p_ghp4933 free
- q_ghp4933 free
- t_ct4933 >= 4
- -infinity <= t_ct4934 <= 4
- q_ct4933 free
- delta_q_ct4933 free
+ -infinity <= p_cw_inst <= 0
+ q_cw4602 free
+ p_cw4602 free
 End

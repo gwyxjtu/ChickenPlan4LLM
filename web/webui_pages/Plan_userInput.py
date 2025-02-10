@@ -146,7 +146,7 @@ def page_user2json(client):
             "冷负荷峰值": st.number_input("冷负荷峰值 (kW)", min_value=0, value=100000, step=1000, key="cold_peak"),
             "热负荷峰值": st.number_input("热负荷峰值 (kW)", min_value=0, value=200000, step=1000, key="heat_peak"),
             "电负荷峰值": st.number_input("电负荷峰值 (kW)", min_value=0, value=50000, step=1000, key="power_peak"),
-            "建筑面积": st.number_input("建筑面积 (m²)", min_value=0, value=120000, step=1000, key="area"),
+            "建筑面积": st.number_input("建筑面积 (m²)", min_value=0, value=12000, step=1000, key="area"),
             "年总收益": st.number_input("年总收益 (元)", min_value=0, value=5000000, step=100000, key="annual_revenue"),
             "分时电价": [0.5] * 28,  # 保持原有的24小时电价格式
             "氢气价格": st.number_input("氢气价格 (元/kg)", min_value=0.0, value=20.0, step=0.1, key="h2_price"),
