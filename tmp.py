@@ -123,16 +123,15 @@ def planning_problem(period_data, input_param):
     p_eb_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["eb"]["p_max"], name=f"p_eb_inst")  # 电锅炉装机容量
     p_eb = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_eb{t}") for t in range(period)]  # 电锅炉耗电量
     g_eb = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_eb{t}") for t in range(period)]  # 电锅炉产热量
-    # 热泵
-    p_hp_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hp"]["p_max"], name=f"p_hp_inst")  # 热泵装机容量
-    p_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_hp{t}") for t in range(period)]  # 热泵耗电量
-    g_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_hp{t}") for t in range(period)]  # 热泵产热量
-    q_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"q_hp{t}") for t in range(period)]  # 热泵产冷量
+    # 空气源热泵
+    p_hp_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hp"]["p_max"], name=f"p_hp_inst")  # 空气源热泵装机容量
+    p_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_hp{t}") for t in range(period)]  # 空气源热泵耗电量
+    g_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_hp{t}") for t in range(period)]  # 空气源热泵产热量
+    q_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"q_hp{t}") for t in range(period)]  # 空气源热泵产冷量
     # 地源热泵
     p_ghp_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["ghp"]["p_max"], name=f"p_ghp_inst")  # 地源热泵装机容量
     p_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_ghp{t}") for t in range(period)]  # 地源热泵耗电量
     g_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp{t}") for t in range(period)]  # 地源热泵产热量
-    g_ghp_inj = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp_inj{t}") for t in range(period)]  # 地源热泵灌热量
     q_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"q_ghp{t}") for t in range(period)]  # 地源热泵产冷量
     # 地热井
     num_gtw_inst = model.addVar(vtype=GRB.INTEGER, lb=0, ub=input_param["device"]["gtw"]["number_max"], name="num_gtw_inst")  # 地热井装机数量
@@ -140,7 +139,7 @@ def planning_problem(period_data, input_param):
     h_hst_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hst"]["h_max"], name=f"h_hst_inst")  # 储氢罐装机容量
     h_hst = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"h_hst{t}") for t in range(period)]  # 储氢罐储氢量
     delta_h_hst = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"delta_h_hst{t}") for t in range(period)]  # 储氢罐储氢变化量
-    # 蓄水箱
+    # 热水箱
     m_tank_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["tank"]["m_max"], name=f"m_tank_inst")  # 蓄水箱装机容量
     t_ht = [model.addVar(vtype=GRB.CONTINUOUS, lb=input_param["device"]["tank"]["t_ht_min"], ub=input_param["device"]["tank"]["t_ht_max"], name=f"t_ht{t}") for t in range(period)]  # 热水箱水温
     g_ht = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"g_ht{t}") for t in range(period)]  # 热水箱供热量
@@ -151,19 +150,20 @@ def planning_problem(period_data, input_param):
     delta_q_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"delta_q_ct{t}") for t in range(period)]  # 冷水箱储冷变化量
     # 管网
     g_tube = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_tube{t}") for t in range(period)]  # 管网供热量
+    g_ghp_inj = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp_inj{t}") for t in range(period)]  # 地源热泵灌热量
 
-    # 设备装机列表，只包含上文建模出现过的设备
+    # 设备装机列表，每次必须生成，只包含上文建模出现过的设备
     device_inst_list = {
         "电解槽": p_el_inst,
         "光伏板": s_pv_inst,
+        "燃料电池": p_fc_inst,
         "电锅炉": p_eb_inst,
-        "热泵": p_hp_inst,
+        "空气源热泵": p_hp_inst,
         "地源热泵": p_ghp_inst,
         "地热井": num_gtw_inst,
         "储氢罐": h_hst_inst,
-        "蓄水箱": m_tank_inst,
+        "热水箱": m_tank_inst,
     }
-    
     # ------ Update model ------
     model.update()
 
@@ -199,8 +199,7 @@ def planning_problem(period_data, input_param):
         model.addConstr(g_ht_loss[t] == mu_tank_loss * c_water * m_tank_inst * (t_ht[t] - t_ht_min))  # 热水箱热损失量
         # 冷水箱（蓄水箱储冷时）
         model.addConstr(q_ct[t] == -delta_q_ct[t])  # 冷水箱供冷量
-        # 管网
-        model.addConstr(g_tube[t] == g_sc[t] + g_fc[t] + g_eb[t] + g_hp[t] + g_ht[t] - g_ghp_inj[t])  # 管网供热量
+
     # 地热井和地源热泵有关联，地缘热泵可以从所有地热井中取得的热量最大值不得小于地源热泵最大产热量
     model.addConstr(num_gtw_inst * g_gtw >= p_ghp_inst * k_ghp_g)
     # 储能设备约束
@@ -212,12 +211,12 @@ def planning_problem(period_data, input_param):
     model.addConstr(delta_h_hst[-1] == h_hst[0] - h_hst[-1])  # 储氢罐约束
     model.addConstr(delta_g_ht[-1] == c_water * m_tank_inst * (t_ht[0] - t_ht[-1]))  # 热水箱约束
     model.addConstr(delta_q_ct[-1] == -c_water * m_tank_inst * (t_ct[0] - t_ct[-1]))  # 冷水箱约束
-    
+
     # --- 能量平衡约束 ---
     for t in range(period):
         model.addConstr(p_pur[t] + p_pv[t] + p_fc[t] - p_sell[t] == p_load[t] + p_el[t] + p_eb[t] + p_hp[t] + p_ghp[t])  # 电平衡约束，只能包含已有的变量
         # g_load 为 numpy 数组，不能单独放在约束的左侧；q_load 同理
-        model.addConstr(g_tube[t] + g_ghp[t] == g_load[t])  # 热平衡约束
+        model.addConstr(g_sc[t] + g_fc[t] + g_eb[t] + g_hp[t] + g_ht[t] + g_ghp[t] == g_load[t] + g_ghp_inj[t])  # 热平衡约束
         model.addConstr(q_hp[t] + q_ghp[t] + q_ct[t] == q_load[t])  # 冷平衡约束
         model.addConstr(h_pur[t] + h_el[t] - h_fc[t] == delta_h_hst[t])  # 氢平衡约束
 

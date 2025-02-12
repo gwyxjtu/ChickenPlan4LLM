@@ -35,87 +35,94 @@ def exec_opt(client):
     if 'run_history' not in st.session_state:
         st.session_state.run_history = []
 
+    # Initialize run results if not exists
+    if 'run_results' not in st.session_state:
+        st.session_state.run_results = []
+
     local_env = {"project_path": project_path}
     solver_code = st.session_state.code
     code_to_execute = code_template.format(solver_code=solver_code)
 
     # Create a placeholder for streaming output
-    output_placeholder = st.empty()
-    with output_placeholder.container():
-        st.write("Execution output:")
-        output_area = st.empty()
-        current_output = ""
+    # output_placeholder = st.empty()
+    # with output_placeholder.container():
+    st.write("Execution output:")
+    output_area = st.empty()
+    current_output = ""
 
-        # print("=" * 80)
-        # print("Code to execute:")
-        # print("=" * 80)
-        # print(code_to_execute)
-        # current_output += code_to_execute + "\n"
-        # output_area.code(current_output)
-    
-        with open("tmp.py", "w", encoding="utf-8") as f:
-            f.write(code_to_execute)
+    # print("=" * 80)
+    # print("Code to execute:")
+    # print("=" * 80)
+    # print(code_to_execute)
+    # current_output += code_to_execute + "\n"
+    # output_area.code(current_output)
 
-        try:
-            exec(code_to_execute, local_env, local_env)
-            print("Execution successful.")
-            current_output += "\nExecution successful.\n"
-            output_area.code(local_env["device_cap"])
+    with open("tmp.py", "w", encoding="utf-8") as f:
+        f.write(code_to_execute)
+
+    try:
+        exec(code_to_execute, local_env, local_env)
+        print("Execution successful.")
+        current_output += "\nExecution successful.\n"
+        print(local_env["device_cap"])
+        # print("+++")
+        # output_area.code(local_env["device_cap"])
+        
+        st.session_state.run_results.append(local_env["device_cap"])
+        st.session_state.run_history.append({"attempt": st.session_state.retry_count + 1, "status": "success"})
+        st.session_state.retry_count = 0  # Reset retry count on success
+        
+    except Exception as e:
+        error_msg = str(e)
+        print("An error occurred during execution:")
+        print(traceback.format_exc())
+        current_output += f"\nAn error occurred during execution:\n{traceback.format_exc()}\n"
+        output_area.code(current_output)
+        
+        st.session_state.run_history.append({"attempt": st.session_state.retry_count + 1, "status": "error", "error": error_msg})
+        output_area.code(st.session_state.run_history[-1])
+
+        if st.session_state.retry_count < 2:  # Allow up to 2 retries
+            st.session_state.retry_count += 1
             
-            st.session_state.run_results.append(local_env["device_cap"])
-            st.session_state.run_history.append({"attempt": st.session_state.retry_count + 1, "status": "success"})
-            st.session_state.retry_count = 0  # Reset retry count on success
+            # Generate new code using the alternative template
+            code_sys_prompt = code_prompt_cot_template[0]
+            code_user_prompt = code_prompt_cot_template[1].format(
+                solver="gurobipy",
+                example_info_input=json.dumps(example_info_input, ensure_ascii=False),
+                example_param_input=json.dumps(example_param_input, ensure_ascii=False),
+                example_output=example_code_output,
+                info_input=json.dumps(st.session_state.json_description, ensure_ascii=False),
+                param_input=json.dumps(st.session_state.parameters, ensure_ascii=False),
+                know_input=json.dumps({
+                    "device_knowledge": st.session_state.filtered_device_knowledge
+                }, ensure_ascii=False),
+                problem=error_msg
+            )
             
-        except Exception as e:
-            error_msg = str(e)
-            print("An error occurred during execution:")
-            print(traceback.format_exc())
-            current_output += f"\nAn error occurred during execution:\n{traceback.format_exc()}\n"
-            output_area.code(current_output)
+            completion = call_openai_stream(
+                client=client,
+                system_prompt=code_sys_prompt,
+                user_prompt=code_user_prompt,
+                model=MODEL,
+                max_response_tokens=8192,
+                max_tokens=128000,
+                temperature=0.3
+            )
             
-            st.session_state.run_history.append({"attempt": st.session_state.retry_count + 1, "status": "error", "error": error_msg})
-            
-            if st.session_state.retry_count < 2:  # Allow up to 2 retries
-                st.session_state.retry_count += 1
-                
-                # Generate new code using the alternative template
-                code_sys_prompt = code_prompt_cot_template[0]
-                code_user_prompt = code_prompt_cot_template[1].format(
-                    solver="gurobipy",
-                    example_info_input=json.dumps(example_info_input, ensure_ascii=False),
-                    example_param_input=json.dumps(example_param_input, ensure_ascii=False),
-                    example_output=example_code_output,
-                    info_input=json.dumps(st.session_state.json_description, ensure_ascii=False),
-                    param_input=json.dumps(st.session_state.parameters, ensure_ascii=False),
-                    know_input=json.dumps({
-                        "device_knowledge": st.session_state.filtered_device_knowledge
-                    }, ensure_ascii=False),
-                    problem=error_msg
-                )
-                
-                completion = call_openai_stream(
-                    client=client,
-                    system_prompt=code_sys_prompt,
-                    user_prompt=code_user_prompt,
-                    model=MODEL,
-                    max_response_tokens=8192,
-                    max_tokens=128000,
-                    temperature=0.3
-                )
-                
-                full_response = ""
-                for chunk in completion:
-                    content = chunk.choices[0].delta.content
-                    if content is None:
-                        if "```python" in full_response:
-                            full_response = full_response.split("```python")[1].split("```")[0].strip()
-                        st.session_state.code = full_response
-                        exec_opt(client)  # Recursive retry with new code
-                    else:
-                        full_response += content
-            else:
-                st.session_state.run_results.append({"error": error_msg})
-                st.session_state.retry_count = 0  # Reset retry count after max retries
+            full_response = ""
+            for chunk in completion:
+                content = chunk.choices[0].delta.content
+                if content is None:
+                    if "```python" in full_response:
+                        full_response = full_response.split("```python")[1].split("```")[0].strip()
+                    st.session_state.code = full_response
+                    exec_opt(client)  # Recursive retry with new code
+                else:
+                    full_response += content
+        else:
+            st.session_state.run_results.append({"error": error_msg})
+            st.session_state.retry_count = 0  # Reset retry count after max retries
 
 def page_param2code(client):
     
@@ -214,8 +221,6 @@ def page_param2code(client):
         height=CODE_EDITOR_HEIGHT
     )
     st.session_state.code = code
-    # 存储每次运行结果
-    st.session_state.run_results = []
     # 运行按钮
     st.button("运行代码", on_click=lambda: exec_opt(client), use_container_width=True, type="primary")
 
@@ -231,7 +236,9 @@ def page_param2code(client):
                     st.write(f"第 {attempt['attempt']} 次尝试: 执行成功")
                     # Display planning results for successful attempts
                     # 展示 planning_result 规划容量
-                    st.json(st.session_state.run_results)
+                    # print(st.session_state.run_results)
+                    # print("---")
+                    # st.json(st.session_state.run_results[-1])
                 else:
                     st.error(f"第 {attempt['attempt']} 次尝试失败: {attempt['error']}")
                     st.write("正在尝试优化代码重新执行...")
@@ -239,14 +246,34 @@ def page_param2code(client):
                 # time.sleep(0.05)  # Add a small delay for visual effect
     
     # 显示最终结果
-    if st.session_state.run_results:
+    if hasattr(st.session_state, 'run_results') and st.session_state.run_results:
         latest_result = st.session_state.run_results[-1]
         if "error" in latest_result:
             st.error("所有重试均失败，请检查问题描述或手动修改代码")
         else:
             st.success("代码执行成功!")
-            st.json(latest_result)
-            print(st.session_state.run_results)
+            # Format and display the results in a more organized way
+            with st.expander("查看详细结果", expanded=True):
+                st.json(latest_result)
+            # Add a summary section for key metrics
+            if isinstance(latest_result, dict):
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.subheader("设备装机容量")
+                    if "cap_device" in latest_result:
+                        for device, capacity in latest_result["cap_device"].items():
+                            st.metric(label=device, value=capacity)
+                with col2:
+                    st.subheader("经济性指标")
+                    if "revenue_p" in latest_result:
+                        st.metric(label="电费收入", value=f"{latest_result['revenue_p']:.2f}元")
+                    if "revenue_g" in latest_result:
+                        st.metric(label="供热收入", value=f"{latest_result['revenue_g']:.2f}元")
+                    if "revenue_q" in latest_result:
+                        st.metric(label="供冷收入", value=f"{latest_result['revenue_q']:.2f}元")
+                    if "revenue_s" in latest_result:
+                        st.metric(label="售电收入", value=f"{latest_result['revenue_s']:.2f}元")
+            print(st.session_state.run_results[-1])
 
 
 if __name__ == "__main__":

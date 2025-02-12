@@ -7,8 +7,11 @@
         "g_month": [],
         "q_month": [],
         "p_area": 12000,
-        "g_area": 0,
-        "q_area": 0
+        "g_area": 12000,
+        "q_area": 12000,
+        "p_load": 50000,
+        "g_load": 200000,
+        "q_load": 100000
     },
     "price": {
         "TOU_power": [
@@ -43,13 +46,13 @@
         ],
         "p_sell_price": 0,
         "g_price": 50.0,
-        "q_price": 0,
+        "q_price": 50.0,
         "h_price": 20.0
     },
     "device": {
         "pv": {
             "_comment": "photovoltaic，光伏板",
-            "area_max": 12000,
+            "area_max": 50000,
             "area_min": 0,
             "cost": 700,
             "life": 20,
