@@ -1,7 +1,7 @@
 '''
 Author: guo_MateBookPro 867718012@qq.com
 Date: 2025-01-07 10:10:37
-LastEditTime: 2025-02-04 02:15:29
+LastEditTime: 2025-02-16 12:43:57
 LastEditors: guo_MateBookPro 867718012@qq.com
 FilePath: /ChickenPlan4LLM/web/app.py
 Description: 雪花掩盖着哽咽叹息这离别
@@ -88,6 +88,7 @@ def page_home():
         sys_img_path = project_path+"/images/system.jpeg"
         st.markdown('<div class="home-title">大模型驱动数据中心能源系统运维管理平台</div>', unsafe_allow_html=True)
         st.image(sys_img_path, use_column_width=True)
+        st.button("Test Streaming API", on_click=lambda:test_api(col1))
     with col2:
         st.markdown("<div class='home-button-container'>", unsafe_allow_html=True)
         # 使用特定的 home-page-button 类名包裹按钮
@@ -115,6 +116,35 @@ def navigate_to_planning():
 def navigate_to_home():
     st.session_state["current_page"] = "Home"
 
+# 写一个按钮测试api接口
+def test_api(container):
+    system_prompt = "You are a helpful assistant."
+    user_prompt = "Say hello and introduce yourself briefly."
+    completion = call_openai_stream(
+        client=client,
+        system_prompt=system_prompt,
+        user_prompt=user_prompt,
+        model=MODEL
+    )
+    # breakpoint()
+    # Create a container for streaming output
+    # container = st.empty()
+    full_response = ""
+    try:
+        for chunk in completion:
+            content = chunk.choices[0].delta.content
+            if content is not None:
+                full_response += content
+                # Update the container with the latest content
+                container.markdown(full_response)
+    except Exception as e:
+        container.error(f"Error during streaming: {str(e)}")
+    finally:
+        if full_response:
+            # Keep the final response visible
+            container.markdown(full_response)
+        else:
+            container.warning("No response received")
 
 
 
@@ -127,11 +157,14 @@ from webui_pages.Plan_exec_plot import page_result
 # 页面标题
 st.title("Energy LLM")
 
+
+
 # 判断显示首页或工作流页面
 if st.session_state["current_page"] == "Home":
     page_home()
 else:
     with st.sidebar:
+        
         selected_tab = option_menu(
             menu_title="Planning",
             menu_icon="robot",

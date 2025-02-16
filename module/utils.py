@@ -59,9 +59,9 @@ def call_openai(
         client: openai.Client,
         system_prompt: str,
         user_prompt: str,
-        model: str = "gpt-4-turbo",
-        max_response_tokens: int = 4096,
-        max_tokens: int = 128000,
+        model: str = "ep-20250215204507-wgzht",
+        max_response_tokens: int = 16383,
+        max_tokens: int = 16383,
         temperature: float = 0.5
 ) -> str:
     """调用 OpenAI API
@@ -125,9 +125,9 @@ def call_openai_stream(
         client: openai.Client,
         system_prompt: str,
         user_prompt: str,
-        model: str = "gpt-4-turbo",
-        max_response_tokens: int = 4096,
-        max_tokens: int = 128000,
+        model: str = "Pro/deepseek-ai/DeepSeek-R1",
+        max_response_tokens: int = 16383,
+        max_tokens: int = 16383,
         temperature: float = 0.5
 ):
     """调用 OpenAI API
@@ -151,12 +151,15 @@ def call_openai_stream(
     full_response = ""
 
     # 写一个流式输出的clinet
+    # breakpoint()
     completion = client.chat.completions.create(
         model=model,
         messages=messages,
-        max_completion_tokens=max_response_tokens,
-        max_tokens=max_tokens,
+        # max_completion_tokens=max_response_tokens,
+        # max_tokens=max_tokens,
         stream=True,
-        temperature=temperature
+        # temperature=temperature
     )
+    # breakpoint()
     return completion
+

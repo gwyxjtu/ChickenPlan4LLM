@@ -106,7 +106,7 @@ def exec_opt(client):
                 user_prompt=code_user_prompt,
                 model=MODEL,
                 max_response_tokens=8192,
-                max_tokens=128000,
+                max_tokens=16384,
                 temperature=0.3
             )
             
@@ -151,7 +151,7 @@ def page_param2code(client):
                 user_prompt=code_user_prompt,
                 model=MODEL,
                 max_response_tokens=8192,
-                max_tokens=128000,
+                max_tokens=16384,
                 temperature=0.3
             )
             with st.empty():

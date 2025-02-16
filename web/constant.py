@@ -5,4 +5,4 @@ DEFAULT_CODE = ""
 
 TEXT_AREA_HEIGHT = 200
 CODE_EDITOR_HEIGHT = 400
-MODEL = "gpt-4o-mini"
+MODEL = "o1-mini"
