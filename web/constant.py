@@ -1,3 +1,11 @@
+'''
+Author: guo_MateBookPro 867718012@qq.com
+Date: 2025-01-03 11:27:48
+LastEditTime: 2025-02-26 17:21:10
+LastEditors: guo_MateBookPro 867718012@qq.com
+FilePath: /ChickenPlan4LLM/web/constant.py
+Description: 雪花掩盖着哽咽叹息这离别
+'''
 DEFAULT_DESCRIPTION = ""
 DEFAULT_JSON_DESCRIPTION = ""
 DEFAULT_PARAMS = ""
@@ -5,4 +13,5 @@ DEFAULT_CODE = ""
 
 TEXT_AREA_HEIGHT = 200
 CODE_EDITOR_HEIGHT = 400
-MODEL = "o1-mini"
+MODEL = "gpt-4o-mini"
+# "o1-mini"

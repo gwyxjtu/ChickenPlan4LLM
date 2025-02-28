@@ -1,7 +1,7 @@
 '''
 Author: guo_MateBookPro 867718012@qq.com
 Date: 2025-02-07 11:08:28
-LastEditTime: 2025-02-10 19:57:02
+LastEditTime: 2025-02-28 13:45:39
 LastEditors: guo_MateBookPro 867718012@qq.com
 FilePath: /ChickenPlan4LLM/module/code_template.py
 Description: 雪花掩盖着哽咽叹息这离别
@@ -14,10 +14,10 @@ import numpy as np
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
-# project_path = os.path.dirname(os.path.realpath(__file__))
-# project_path = project_path.replace("\\", "/")
-def read_load(building_type, file_load=""):
-    if not building_type:
+project_path = os.path.dirname(os.path.realpath(__file__))
+project_path = project_path.replace("\\\\", "/")
+def read_load(load_json, file_load=""):
+    if not load_json["building_type"]:
         raise ValueError("building_type cannot be empty")
 
     load_path = os.path.join(project_path, "data", "load_data")
@@ -27,7 +27,7 @@ def read_load(building_type, file_load=""):
     if not file_load:
         try:
             root, dirs, files = next(os.walk(load_path))
-            matching_files = [f for f in files if building_type in f and f.endswith('.csv')]
+            matching_files = [f for f in files if load_json["building_type"] in f and f.endswith('.csv')]
             file_load = os.path.join(load_path, matching_files[0])
         except StopIteration:
             raise FileNotFoundError(f"Failed to read directory:")
@@ -39,10 +39,16 @@ def read_load(building_type, file_load=""):
         'Cooling Load [J]',
         'Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)'
     ]
+    # 按照峰值等修改负荷
+    # Scale loads according to peak values and areas
+    p_load = load['Electricity Load [J]'] / max(load['Electricity Load [J]']) * load_json['p_max']
+    g_load = load['Heating Load [J]']/ max(load['Heating Load [J]']) * load_json['g_max']
+    q_load = load['Cooling Load [J]']/ max(load['Cooling Load [J]']) * load_json['q_max']
+    
     return {{
-        'p_load': load['Electricity Load [J]'],
-        'g_load': load['Heating Load [J]'],
-        'q_load': load['Cooling Load [J]'],
+        'p_load': p_load,
+        'g_load': g_load,
+        'q_load': q_load,
         'r_solar': load['Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)']
     }}
 {solver_code}
@@ -65,11 +71,11 @@ def read_load(building_type, file_load=""):
 
 
 # 读参数json
-with open(project_path+"/data/parameters.json", "r", encoding="utf-8") as load_file:
+with open(project_path+"/web/data/parameters.json", "r", encoding="utf-8") as load_file:
     input_json = json.load(load_file)
     
 # 读负荷csv
-load = read_load(input_json["load"]["building_type"])
+load = read_load(input_json["load"])
 
 device_cap = planning_problem(load, input_json)
 planning_result_path = project_path + "/doc/planning_result.json"

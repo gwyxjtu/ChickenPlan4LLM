@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
-# project_path = os.path.dirname(os.path.realpath(__file__))
-# project_path = project_path.replace("\", "/")
-def read_load(building_type, file_load=""):
-    if not building_type:
+project_path = os.path.dirname(os.path.realpath(__file__))
+project_path = project_path.replace("\\", "/")
+def read_load(load_json, file_load=""):
+    if not load_json["building_type"]:
         raise ValueError("building_type cannot be empty")
 
     load_path = os.path.join(project_path, "data", "load_data")
@@ -19,7 +19,7 @@ def read_load(building_type, file_load=""):
     if not file_load:
         try:
             root, dirs, files = next(os.walk(load_path))
-            matching_files = [f for f in files if building_type in f and f.endswith('.csv')]
+            matching_files = [f for f in files if load_json["building_type"] in f and f.endswith('.csv')]
             file_load = os.path.join(load_path, matching_files[0])
         except StopIteration:
             raise FileNotFoundError(f"Failed to read directory:")
@@ -31,12 +31,19 @@ def read_load(building_type, file_load=""):
         'Cooling Load [J]',
         'Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)'
     ]
+    # 按照峰值等修改负荷
+    # Scale loads according to peak values and areas
+    p_load = load['Electricity Load [J]'] / max(load['Electricity Load [J]']) * load_json['p_max']
+    g_load = load['Heating Load [J]']/ max(load['Heating Load [J]']) * load_json['g_max']
+    q_load = load['Cooling Load [J]']/ max(load['Cooling Load [J]']) * load_json['q_max']
+    
     return {
-        'p_load': load['Electricity Load [J]'],
-        'g_load': load['Heating Load [J]'],
-        'q_load': load['Cooling Load [J]'],
+        'p_load': p_load,
+        'g_load': g_load,
+        'q_load': q_load,
         'r_solar': load['Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)']
     }
+
 def planning_problem(period_data, input_param):
     # 常数
     c_water = 4.2 / 3600  # 水的比热容
@@ -48,12 +55,11 @@ def planning_problem(period_data, input_param):
     # ------ Parameters input ------
     # 参数输入，时序数据包括电、热、冷、光照强度等；单一数据包括碳排放因子、能源价格、设备价格、设备效率等
     # --- 各时段数据 ---
-    p_load = period_data["p_load"] * input_param["load"]["p_area"]  # 电负荷乘以面积
-    g_load = period_data["g_load"] * input_param["load"]["g_area"]  # 热负荷乘以面积
-    q_load = period_data["q_load"] * input_param["load"]["q_area"]  # 冷负荷乘以面积
+    period = len(period_data["p_load"])
+    p_load = period_data["p_load"]  # 电负荷乘以面积
+    g_load = period_data["g_load"]  # 热负荷乘以面积
+    q_load = period_data["q_load"]  # 冷负荷乘以面积
     r_solar = period_data["r_solar"]  # 光照强度
-
-    period = len(p_load)  # 总时段数
 
     # 展示负荷信息
     print("热负荷总量：{}，冷负荷总量：{}，电负荷总量：{}".format(sum(g_load), sum(q_load), sum(p_load)))
@@ -78,7 +84,7 @@ def planning_problem(period_data, input_param):
     cost_eb = input_param["device"]["eb"]["cost"]  # 电锅炉单价
     cost_hp = input_param["device"]["hp"]["cost"]  # 热泵单价
     cost_ghp = input_param["device"]["ghp"]["cost"]  # 地源热泵单价
-    cost_gtw = input_param["device"]["gtw"]["cost"]  # 地热井单价
+    cost_gtw = input_param["device"]["ghp"]["gtw_cost"]  # 地热井单价
     cost_hst = input_param["device"]["hst"]["cost"]  # 储氢罐单价
     cost_tank = input_param["device"]["tank"]["cost"]  # 蓄水箱单价，元/kWh
 
@@ -96,7 +102,7 @@ def planning_problem(period_data, input_param):
     k_ghp_q = input_param["device"]["ghp"]["k_ghp_q"]  # 地源热泵产冷效率
     mu_tank_loss = input_param["device"]["tank"]["mu_loss"]  # 蓄水箱能量损失系数
 
-    g_gtw = input_param["device"]["gtw"]["g_gtw"]  # 地热井可产热量
+    g_gtw = input_param["device"]["ghp"]["g_gtw"]  # 地热井可产热量
 
     t_ht_min = input_param["device"]["tank"]["t_ht_min"]
 
@@ -132,9 +138,10 @@ def planning_problem(period_data, input_param):
     p_ghp_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["ghp"]["p_max"], name=f"p_ghp_inst")  # 地源热泵装机容量
     p_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_ghp{t}") for t in range(period)]  # 地源热泵耗电量
     g_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp{t}") for t in range(period)]  # 地源热泵产热量
+    g_ghp_inj = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp_inj{t}") for t in range(period)]  # 地源热泵灌热量
     q_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"q_ghp{t}") for t in range(period)]  # 地源热泵产冷量
     # 地热井
-    num_gtw_inst = model.addVar(vtype=GRB.INTEGER, lb=0, ub=input_param["device"]["gtw"]["number_max"], name="num_gtw_inst")  # 地热井装机数量
+    num_gtw_inst = model.addVar(vtype=GRB.INTEGER, lb=0, ub=input_param["device"]["ghp"]["num_gtw_max"], name="num_gtw_inst")  # 地热井装机数量
     # 储氢罐
     h_hst_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hst"]["h_max"], name=f"h_hst_inst")  # 储氢罐装机容量
     h_hst = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"h_hst{t}") for t in range(period)]  # 储氢罐储氢量
@@ -145,24 +152,21 @@ def planning_problem(period_data, input_param):
     g_ht = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"g_ht{t}") for t in range(period)]  # 热水箱供热量
     delta_g_ht = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"delta_g_ht{t}") for t in range(period)]  # 热水箱储热变化量
     g_ht_loss = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ht_loss{t}") for t in range(period)]  # 热水箱热损失量
-    t_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=input_param["device"]["tank"]["t_ct_min"], ub=input_param["device"]["tank"]["t_ct_max"], name=f"t_ct{t}") for t in range(period)]  # 冷水箱水温
+    t_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=input_param["device"]["tank"]["t_ct_min"], ub=input_param["device"]["tank"]["t_ct_min"], name=f"t_ct{t}") for t in range(period)]  # 冷水箱水温
     q_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"q_ct{t}") for t in range(period)]  # 冷水箱供冷量
     delta_q_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"delta_q_ct{t}") for t in range(period)]  # 冷水箱储冷变化量
-    # 管网
-    g_tube = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_tube{t}") for t in range(period)]  # 管网供热量
-    g_ghp_inj = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp_inj{t}") for t in range(period)]  # 地源热泵灌热量
 
     # 设备装机列表，每次必须生成，只包含上文建模出现过的设备
     device_inst_list = {
-        "电解槽": p_el_inst,
-        "光伏板": s_pv_inst,
-        "燃料电池": p_fc_inst,
-        "电锅炉": p_eb_inst,
-        "空气源热泵": p_hp_inst,
-        "地源热泵": p_ghp_inst,
-        "地热井": num_gtw_inst,
-        "储氢罐": h_hst_inst,
-        "热水箱": m_tank_inst,
+        "电解槽":p_el_inst,
+        "光伏板":s_pv_inst,
+        "燃料电池":p_fc_inst,
+        "电锅炉":p_eb_inst,
+        "空气源热泵":p_hp_inst,
+        "地源热泵":p_ghp_inst,
+        "地热井":num_gtw_inst,
+        "储氢罐":h_hst_inst,
+        "热水箱":m_tank_inst,
     }
     # ------ Update model ------
     model.update()
@@ -211,7 +215,7 @@ def planning_problem(period_data, input_param):
     model.addConstr(delta_h_hst[-1] == h_hst[0] - h_hst[-1])  # 储氢罐约束
     model.addConstr(delta_g_ht[-1] == c_water * m_tank_inst * (t_ht[0] - t_ht[-1]))  # 热水箱约束
     model.addConstr(delta_q_ct[-1] == -c_water * m_tank_inst * (t_ct[0] - t_ct[-1]))  # 冷水箱约束
-
+    
     # --- 能量平衡约束 ---
     for t in range(period):
         model.addConstr(p_pur[t] + p_pv[t] + p_fc[t] - p_sell[t] == p_load[t] + p_el[t] + p_eb[t] + p_hp[t] + p_ghp[t])  # 电平衡约束，只能包含已有的变量
@@ -229,7 +233,7 @@ def planning_problem(period_data, input_param):
              + cost_eb * p_eb_inst / input_param["device"]["eb"]["life"]
              + cost_hp * p_hp_inst / input_param["device"]["hp"]["life"]
              + cost_ghp * p_ghp_inst / input_param["device"]["ghp"]["life"]
-             + cost_gtw * num_gtw_inst / input_param["device"]["gtw"]["life"]
+             + cost_gtw * num_gtw_inst / input_param["device"]["ghp"]["gtw_life"]
              + cost_hst * h_hst_inst / input_param["device"]["hst"]["life"]
              + cost_tank * m_tank_inst / input_param["device"]["tank"]["life"])  
     # 运行费用
@@ -237,6 +241,7 @@ def planning_problem(period_data, input_param):
             - gp.quicksum([p_sell[t] for t in range(period)]) * p_sell_price
             + gp.quicksum([h_pur[t] for t in range(period)]) * h_price)  
     model.setObjective((capex + opex), GRB.MINIMIZE)
+
     # ------ Optimize ------
     model.params.NonConvex = 2
     model.Params.LogFile = project_path + "/log/mip.log"
@@ -256,11 +261,11 @@ def planning_problem(period_data, input_param):
 
 
 # 读参数json
-with open(project_path+"/data/parameters.json", "r", encoding="utf-8") as load_file:
+with open(project_path+"/web/data/parameters.json", "r", encoding="utf-8") as load_file:
     input_json = json.load(load_file)
     
 # 读负荷csv
-load = read_load(input_json["load"]["building_type"])
+load = read_load(input_json["load"])
 
 device_cap = planning_problem(load, input_json)
 planning_result_path = project_path + "/doc/planning_result.json"
