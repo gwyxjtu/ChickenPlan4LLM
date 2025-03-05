@@ -76,20 +76,17 @@
     "变量": [["地源热泵装机容量", "p_{inst}^{ghp}", "p_ghp_inst"],
             ["地源热泵产热量", "g_{t}^{ghp}", "g_ghp"],
             ["地源热泵产冷量", "q_{t}^{ghp}", "q_ghp"],
-            ["地源热泵耗电量", "p_{t}^{ghp}", "p_ghp"],
-            ["地热井装机数量", "num_{inst}^{gtw}", "num_gtw_inst"]
+            ["地源热泵耗电量", "p_{t}^{ghp}", "p_ghp"]
     ],
     "参数": [["地源热泵最大装机容量", "p_{max}^{ghp}", "p_ghp_max"],
             ["地热井最大数目", "k_{g}^{ghp}", "num_gtw_max"],
             ["地源热泵热转换效率", "k_{g}^{ghp}", "k_ghp_g"],
-            ["地源热泵冷转换效率", "k_{q}^{ghp}", "k_ghp_q"],
-            ["单个地热井可产热量", "g^{gtw}", "g_gtw"]
+            ["地源热泵冷转换效率", "k_{q}^{ghp}", "k_ghp_q"]
     ],
     "约束": [["地源热泵装机容量\\var{p_ghp_inst}不得大于其最大装机容量\\param{p_ghp_max}", "p_{inst}^{ghp}\\le p_{max}^{ghp}"],
             ["地源热泵产热量\\var{g_ghp[t]}不得大于其热转换效率\\param{k_ghp_g}和耗电量\\var{p_ghp[t]}的乘积", "g_{t}^{ghp}\\le k_{g}^{ghp}\\times p_{t}^{ghp}"],
             ["地源热泵产冷量\\var{q_ghp[t]}不得大于其冷转换效率\\param{k_ghp_q}和耗电量\\var{p_ghp[t]}的乘积", "q_{t}^{ghp}\\le k_{q}^{ghp}\\times p_{t}^{ghp}"],
-            ["地源热泵耗电量\\var{p_ghp[t]}不得大于其装机容量\\var{p_ghp_inst}", "p_{t}^{ghp}\\le p_{inst}^{ghp}"],
-            ["地源热泵可以从所有地热井中取得的热量最大值（地热井装机数量\\var{num_gtw_inst} * 地热井可产热量\\param{g_gtw}）不得小于地源热泵最大产热量（地源热泵装机容量\\var{p_ghp_inst} * 其产热效率\\param{k_ghp_g}）", "num_{inst}^{gtw}\\times g^{gtw}\\ge p_{inst}^{ghp}\\times k_{g}^{ghp}"]]
+            ["地源热泵耗电量\\var{p_ghp[t]}不得大于其装机容量\\var{p_ghp_inst}", "p_{t}^{ghp}\\le p_{inst}^{ghp}"]]
   },
   "储氢罐":
   {

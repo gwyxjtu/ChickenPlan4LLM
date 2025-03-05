@@ -96,14 +96,10 @@
             "_comment": "ground source heat pump，地源热泵",
             "p_max": 1000,
             "p_min": 0,
-            "num_gtw_max": 2680,
             "cost": 3000,
-            "gtw_cost": 20000,
             "life": 15,
-            "gtw_life": 30,
             "k_ghp_g": 3.54,
-            "k_ghp_q": 4.5,
-            "g_gtw": 7
+            "k_ghp_q": 4.5
         },
         "hst": {
             "_comment": "hydrogen storage tank，储氢罐",

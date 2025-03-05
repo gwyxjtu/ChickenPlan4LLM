@@ -4,7 +4,7 @@ example_user_input = {
     "项目地理位置": "陕西省榆林市",
     "土地使用情况": "供能面积约为12万m2",
     "项目供能对象描述": "为运动员村进行供冷、供热以及供电服务",
-    "项目预期描述": "最大化系统经济型，实现零碳供应能量，设备包括光伏板（pv）、太阳能集热器（sc）、氢燃料电池（fc）、电解槽（el）、电锅炉（eb）、热泵（hp）、地源热泵（ghp）、地热井（gtw）、储氢罐（hst）、蓄水箱（tank）以及其他必要装置设备。"
+    "项目预期描述": "最大化系统经济型，实现零碳供应能量，设备包括光伏板（pv）、太阳能集热器（sc）、氢燃料电池（fc）、电解槽（el）、电锅炉（eb）、热泵（hp）、地源热泵（ghp）、储氢罐（hst）、蓄水箱（tank）以及其他必要装置设备。"
 }
 example_info_output = {
     "背景知识": "构建能源系统规划问题，在满足设备运行约束、能量平衡约束和其他附加约束的前提下，构建经济最优目标函数，计算得到设备容量和全年运行数据",
@@ -33,7 +33,6 @@ example_info_output = {
         "设备运行约束：调度周期\\param{period}内各时段地源热泵产热量\\var{g_ghp[t]}不得大于其产热效率\\param{k_ghp_g}和其耗电量\\var{p_ghp[t]}的乘积",
         "设备运行约束：调度周期\\param{period}内各时段地源热泵产冷量\\var{q_ghp[t]}不得大于其产冷效率\\param{k_ghp_q}和其耗电量\\var{p_ghp[t]}的乘积",
         "设备运行约束：调度周期\\param{period}内各时段地源热泵耗电量\\var{p_ghp[t]}不得大于其装机容量\\var{p_ghp_inst}",
-        "设备运行约束：地缘热泵可以从所有地热井中取得的热量最大值（地热井装机数量\\var{num_gtw_inst} * 地热井可产热量\\param{g_gtw}）不得小于地源热泵最大产热量（地源热泵装机容量\\var{p_ghp_inst} * 其产热效率\\param{k_ghp_g}）",
         "设备运行约束：调度周期\\param{period}内各时段储氢罐储氢量\\var{h_hst[t]}不得大于其装机容量\\var{h_hst_inst}",
         "设备运行约束：调度周期\\param{period}内各时段热水箱（蓄水箱储热时）供热量\\var{g_ht[t]}等于热水箱储热变化量\\var{delta_g_ht[t]}的负值减去其热损失量\\var{g_ht_loss[t]}",
         "设备运行约束：调度周期\\param{period}内各时段热水箱热损失量\\var{g_ht_loss[t]}等于热损失系数\\param{mu_tank_loss}、水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和当前时刻水箱水温\\var{t_ht[t]}与环境温度（最低水温）\\param{t_ht_min}的差值的乘积",
@@ -46,7 +45,7 @@ example_info_output = {
         "设备运行约束：最后一个时段热水箱储热变化量\\var{delta_g_ht[-1]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（初始时刻水温\\var{t_ht[0]减去当前时刻水温\\var{t_ht[-1]}）的乘积，以保证调度周期结束时热水箱储热量与初始时刻储热量一致",
         "设备运行约束：最后一个时段冷水箱储冷变化量\\var{delta_q_ct[-1]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（初始时刻水温\\var{t_ct[0]减去当前时刻水温\\var{t_ct[-1]}）的乘积的负值，以保证调度周期结束时冷水箱储冷量与初始时刻储冷量一致",
         "能量平衡约束：调度周期\\param{period}内各时段系统的电力供应（包括从电网购电量\\var{p_pur[t]}、光伏产电量\\var{p_pv[t]}和氢燃料电池产电量\\var{p_fc[t]}）减去向电网卖电量\\var{p_sell[t]}应等于电力需求（包括电负载\\param{p_load[t]}、电解槽耗电量\\var{p_el[t]}、电锅炉耗电量\\var{p_eb[t]}、热泵耗电量\\var{p_hp[t]}和地源热泵耗电量\\var{p_ghp[t]}）",
-        "能量平衡约束：调度周期\\param{period}内各时段系统的热负荷\\param{g_load[t]}等于太阳能集热器产热量\\var{g_sc[t]}、氢燃料电池产热量\\var{g_fc[t]}、电锅炉产热量\\var{g_eb[t]}、热泵产热量\\var{g_hp[t]}和热水箱（蓄水箱储热时）供热量\\var{g_ht[t]和地源热泵供热量\\var{g_ghp[t]}的和减去地源热泵向地热井灌热量\\var{g_ghp_inj[t]}",
+        "能量平衡约束：调度周期\\param{period}内各时段系统的热负荷\\param{g_load[t]}等于太阳能集热器产热量\\var{g_sc[t]}、氢燃料电池产热量\\var{g_fc[t]}、电锅炉产热量\\var{g_eb[t]}、热泵产热量\\var{g_hp[t]}和热水箱（蓄水箱储热时）供热量\\var{g_ht[t]和地源热泵供热量\\var{g_ghp[t]}的和",
         "能量平衡约束：调度周期\\param{period}内各时段系统的冷负荷\\param{q_load[t]}等于热泵产冷量\\var{q_hp[t]}、地源热泵产冷量\\var{q_ghp[t]}与冷水箱（蓄水箱储冷时）供冷量\\var{q_ct[t]}的和",
         "能量平衡约束：调度周期\\param{period}内各时段储氢罐储氢变化量\\var{delta_h_hst[t]}等于从氢气市场购氢量\\var{h_pur[t]}与电解槽产氢量\\var{h_el[t]}的和减去氢燃料电池耗氢量\\var{h_fc[t]}",
         "其他约束："
@@ -95,8 +94,8 @@ example_info_output = {
         },
         {
             "参数集信息": "地源热泵信息",
-            "具体内容": "包括地源热泵装机上限、地源热泵装机下限、地源热泵单价、地源热泵寿命、地源热泵产热效率、地源热泵产冷效率、地热井装机数量上限、地热井装机数量下限、地热井单价、地热井寿命、地热井可产热量",
-            "符号": ["p_ghp_max", "p_ghp_min", "cost_ghp", "life_ghp", "k_ghp_g", "k_ghp_q","num_gtw_max", "num_gtw_min", "gtw_cost", "life_gtw", "g_gtw"]
+            "具体内容": "包括地源热泵装机上限、地源热泵装机下限、地源热泵单价、地源热泵寿命、地源热泵产热效率、地源热泵产冷效率",
+            "符号": ["p_ghp_max", "p_ghp_min", "cost_ghp", "life_ghp", "k_ghp_g", "k_ghp_q"]
         },
         {
             "参数集信息": "储氢罐信息",
@@ -152,8 +151,8 @@ example_info_output = {
         },
         {
             "变量集信息": "地源热泵规划与运行变量",
-            "具体内容": "包括地源热泵装机容量、地源热泵产热量、地源热泵产冷量、地源热泵耗电量、地源热泵向地热井灌热量、地热井装机数量",
-            "符号": ["p_ghp_inst", "g_ghp", "q_ghp", "p_ghp", "g_ghp_inj","num_gtw_inst"]
+            "具体内容": "包括地源热泵装机容量、地源热泵产热量、地源热泵产冷量、地源热泵耗电量",
+            "符号": ["p_ghp_inst", "g_ghp", "q_ghp", "p_ghp"]
         },
         {
             "变量集信息": "储氢罐规划与运行变量",
@@ -269,14 +268,10 @@ example_param_output = {
             "_comment": "ground source heat pump，地源热泵",
             "p_max": 1000,
             "p_min": 0,
-            "num_gtw_max": 2680,
             "cost": 3000,
-            "gtw_cost": 20000,
             "life": 15,
-            "gtw_life":30,
             "k_ghp_g": 3.54,
             "k_ghp_q": 4.5,
-            "g_gtw": 7
         },
         "hst": {
             "_comment": "hydrogen storage tank，储氢罐",
@@ -321,9 +316,9 @@ def planning_problem(period_data, input_param):
     # 参数输入，时序数据包括电、热、冷、光照强度等；单一数据包括碳排放因子、能源价格、设备价格、设备效率等
     # --- 各时段数据 ---
     period = len(period_data["p_load"])
-    p_load = period_data["p_load"]  # 电负荷乘以面积
-    g_load = period_data["g_load"]  # 热负荷乘以面积
-    q_load = period_data["q_load"]  # 冷负荷乘以面积
+    p_load = period_data["p_load"]  
+    g_load = period_data["g_load"]  
+    q_load = period_data["q_load"]  
     r_solar = period_data["r_solar"]  # 光照强度
 
     # 展示负荷信息
@@ -337,7 +332,7 @@ def planning_problem(period_data, input_param):
     alpha_e = input_param["carbon"]["alpha_e"]  # 电网排放因子 kg/kWh
 
     # --- 能源价格 ---
-    p_price = input_param["price"]["TOU_power"] * 365  # 分时电价
+    p_price = input_param["price"]["TOU_power"] * 365  # 分时电价，输入的只有24h，需要乘365形成全年
     p_sell_price = input_param["price"]["p_sell_price"]  # 卖电价格
     h_price = input_param["price"]["h_price"]  # 买氢价格
 
@@ -349,7 +344,6 @@ def planning_problem(period_data, input_param):
     cost_eb = input_param["device"]["eb"]["cost"]  # 电锅炉单价
     cost_hp = input_param["device"]["hp"]["cost"]  # 热泵单价
     cost_ghp = input_param["device"]["ghp"]["cost"]  # 地源热泵单价
-    cost_gtw = input_param["device"]["ghp"]["gtw_cost"]  # 地热井单价
     cost_hst = input_param["device"]["hst"]["cost"]  # 储氢罐单价
     cost_tank = input_param["device"]["tank"]["cost"]  # 蓄水箱单价，元/kWh
 
@@ -367,7 +361,6 @@ def planning_problem(period_data, input_param):
     k_ghp_q = input_param["device"]["ghp"]["k_ghp_q"]  # 地源热泵产冷效率
     mu_tank_loss = input_param["device"]["tank"]["mu_loss"]  # 蓄水箱能量损失系数
 
-    g_gtw = input_param["device"]["ghp"]["g_gtw"]  # 地热井可产热量
 
     t_ht_min = input_param["device"]["tank"]["t_ht_min"]
 
@@ -405,8 +398,6 @@ def planning_problem(period_data, input_param):
     g_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp{t}") for t in range(period)]  # 地源热泵产热量
     g_ghp_inj = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp_inj{t}") for t in range(period)]  # 地源热泵灌热量
     q_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"q_ghp{t}") for t in range(period)]  # 地源热泵产冷量
-    # 地热井
-    num_gtw_inst = model.addVar(vtype=GRB.INTEGER, lb=0, ub=input_param["device"]["ghp"]["num_gtw_max"], name="num_gtw_inst")  # 地热井装机数量
     # 储氢罐
     h_hst_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hst"]["h_max"], name=f"h_hst_inst")  # 储氢罐装机容量
     h_hst = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"h_hst{t}") for t in range(period)]  # 储氢罐储氢量
@@ -429,7 +420,6 @@ def planning_problem(period_data, input_param):
         "电锅炉":p_eb_inst,
         "空气源热泵":p_hp_inst,
         "地源热泵":p_ghp_inst,
-        "地热井":num_gtw_inst,
         "储氢罐":h_hst_inst,
         "热水箱":m_tank_inst,
     }
@@ -469,8 +459,7 @@ def planning_problem(period_data, input_param):
         # 冷水箱（蓄水箱储冷时）
         model.addConstr(q_ct[t] == -delta_q_ct[t])  # 冷水箱供冷量
 
-    # 地热井和地源热泵有关联，地缘热泵可以从所有地热井中取得的热量最大值不得小于地源热泵最大产热量
-    model.addConstr(num_gtw_inst * g_gtw >= p_ghp_inst * k_ghp_g)
+
     # 储能设备约束
     for t in range(period - 1):
         model.addConstr(delta_h_hst[t] == h_hst[t + 1] - h_hst[t])  # 储氢罐储氢变化量
@@ -498,7 +487,6 @@ def planning_problem(period_data, input_param):
              + cost_eb * p_eb_inst / input_param["device"]["eb"]["life"]
              + cost_hp * p_hp_inst / input_param["device"]["hp"]["life"]
              + cost_ghp * p_ghp_inst / input_param["device"]["ghp"]["life"]
-             + cost_gtw * num_gtw_inst / input_param["device"]["ghp"]["gtw_life"]
              + cost_hst * h_hst_inst / input_param["device"]["hst"]["life"]
              + cost_tank * m_tank_inst / input_param["device"]["tank"]["life"])  
     # 运行费用
