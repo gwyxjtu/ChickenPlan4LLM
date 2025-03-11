@@ -19,9 +19,8 @@ from module.LLM import (
     example_info_input,
     example_param_output
 )
-from module import call_openai_stream
-
-project_path = Path(__file__).resolve().parents[2]
+from module.utils import call_openai_stream
+from module.utils import PROJECT_PATH
 
 
 def page_json2param(client):
@@ -54,7 +53,7 @@ def page_json2param(client):
             # Parse the JSON string to ensure valid format
             json_data = json.loads(st.session_state.parameters)
             # Write the parsed JSON with standard formatting
-            with open(project_path / "web/data/parameters.json", "w", encoding="utf-8") as f:
+            with open(PROJECT_PATH / "web/data/parameters.json", "w", encoding="utf-8") as f:
                 json.dump(json_data, f, ensure_ascii=False, indent=4)
         except json.JSONDecodeError:
             st.error("Invalid JSON format in parameters")

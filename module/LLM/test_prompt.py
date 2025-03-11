@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from module.LLM import *
-from module import get_openai_client, call_openai
+from module.utils import get_openai_client, call_openai
 
 
 user_input = {

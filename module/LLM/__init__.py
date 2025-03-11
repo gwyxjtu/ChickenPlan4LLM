@@ -33,6 +33,7 @@ __all__ = [
     "info_prompt_template",
     "param_prompt_template",
     "code_prompt_template",
+    "code_prompt_cot_template",
     "example_user_input",
     "example_info_output",
     "example_info_input",

@@ -16,10 +16,9 @@ from module.LLM import (
     example_param_input,
     example_code_output
 )
-from module import call_openai_stream
+from module.utils import get_openai_client, call_openai_stream
 from module import code_template
-
-project_path = str(Path(__file__).resolve().parents[2]).replace("\\", "/")
+from module.utils import PROJECT_PATH
 
 
 def exec_opt(client):
@@ -35,7 +34,10 @@ def exec_opt(client):
     if 'run_results' not in st.session_state:
         st.session_state.run_results = []
 
-    local_env = {"project_path": project_path}
+    local_env = {
+        "__builtins__": __builtins__,
+        "project_path": PROJECT_PATH,
+    }
     solver_code = st.session_state.code
     code_to_execute = code_template.format(solver_code=solver_code)
 
@@ -53,7 +55,7 @@ def exec_opt(client):
     # current_output += code_to_execute + "\n"
     # output_area.code(current_output)
 
-    with open("tmp.py", "w", encoding="utf-8") as f:
+    with open(PROJECT_PATH + "tmp.py", "w", encoding="utf-8") as f:
         f.write(code_to_execute)
 
     try:
@@ -119,8 +121,8 @@ def exec_opt(client):
             st.session_state.run_results.append({"error": error_msg})
             st.session_state.retry_count = 0  # Reset retry count after max retries
 
+
 def page_param2code(client):
-    
     @st.dialog("stream")
     def generate_code():
         info_input = st.session_state.json_description
@@ -251,4 +253,6 @@ def page_param2code(client):
 
 
 if __name__ == "__main__":
-    exec_opt()
+    openai_config_path = PROJECT_PATH + "/module/openai_config.json"
+    client = get_openai_client(openai_config_path)
+    exec_opt(client)

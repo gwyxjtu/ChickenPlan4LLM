@@ -16,3 +16,4 @@ CODE_EDITOR_HEIGHT = 400
 MODEL = "gpt-4o-mini"
 # "gpt-4o-mini"
 # "o1-mini"
+# "deepseek-reasoner"

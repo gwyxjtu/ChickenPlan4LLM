@@ -30,7 +30,8 @@ from constant import (
     MODEL
 )
 
-from module import get_openai_client, call_openai, call_openai_stream
+from module.utils import get_openai_client, call_openai, call_openai_stream
+from module.utils import PROJECT_PATH
 
 from webui_pages.Plan_json_and_data import page_json2param
 from webui_pages.Plan_userInput import page_user2json
@@ -41,12 +42,12 @@ from webui_pages.Plan_exec_plot import page_result
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体，确保系统已安装
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
-# 设置项目路径
-project_path = str(Path(__file__).resolve().parents[1]).replace("\\", "/")
-# openai_config_path = os.path.join(project_path, "module/openai_config.json")
+# # 设置项目路径
+# project_path = str(Path(__file__).resolve().parents[1]).replace("\\", "/")
+# # openai_config_path = os.path.join(project_path, "module/openai_config.json")
 
 # 获取 OpenAI 客户端
-openai_config_path = project_path + "/module/openai_config.json"
+openai_config_path = PROJECT_PATH + "/module/openai_config.json"
 client = get_openai_client(openai_config_path)
 
 # 页面配置
@@ -76,7 +77,7 @@ if "current_page" not in st.session_state:
 def page_home():
     col1, col2, _ = st.columns([7, 2.5, 1])
     with col1:
-        sys_img_path = project_path+"/images/system.jpeg"
+        sys_img_path = PROJECT_PATH + "/images/system.jpeg"
         st.markdown('<div class="home-title">大模型驱动数据中心能源系统运维管理平台</div>', unsafe_allow_html=True)
         st.image(sys_img_path, use_column_width=True)
         st.button("Test Streaming API", on_click=lambda: test_api(col1))

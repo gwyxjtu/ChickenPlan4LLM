@@ -35,7 +35,7 @@ from module.LLM import (
     example_param_input,
     example_code_output
 )
-from module import get_openai_client, call_openai, call_openai_stream
+from module.utils import get_openai_client, call_openai, call_openai_stream
 
 # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体，确保系统已安装

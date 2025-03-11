@@ -1,9 +1,13 @@
+from pathlib import Path
 import json
 from typing import Optional
 import copy
 import xlwt
 import openai
 import tiktoken
+import transformers
+
+PROJECT_PATH = str(Path(__file__).resolve().parents[1]).replace("\\", "/")
 
 res_dict = "./doc/"
 
@@ -167,7 +171,9 @@ def call_openai_stream(
         messages = copy.deepcopy(last_messages)
         messages.extend([
             {"role": "assistant", "content": last_response},
-            {"role": "user", "content": "请继续刚才的回答。请不要重复已生成的内容，仅补充后续部分。"}
+            # {"role": "user", "content": "请继续刚才的回答。注意：- 不要重复已生成的内容；- 直接进行内容续写，用'（接上文）'作为开头。"}
+            # {"role": "user", "content": "请继续刚才的回答。注意，不要重复已生成的内容，直接进行内容续写，不得生成其他多余文字。"}
+            {"role": "user", "content": "请继续刚才的回答。注意，不要重复已生成的内容，直接进行内容续写，不得生成其他多余文字，用'（接上文）'作为开头。"}
         ])
 
     # 根据 model 类型设置 max_completion_tokens 或 max_tokens
@@ -192,7 +198,15 @@ def call_openai_stream(
 
 
 def count_tokens(text: str, model: str = "gpt-4-turbo") -> int:
-    encoding = tiktoken.encoding_for_model(model)
+    if model == "deepseek-reasoner":
+        # DeepSeek-R1 模型计算 token 数需指定编码方案
+        chat_tokenizer_dir = PROJECT_PATH + "/module/deepseek_v3_tokenizer/"
+        encoding = transformers.AutoTokenizer.from_pretrained(
+            chat_tokenizer_dir,
+            trust_remote_code=True
+        )
+    else:
+        encoding = tiktoken.encoding_for_model(model)
     tokens = encoding.encode(text)
     return len(tokens)
 
@@ -209,9 +223,20 @@ def get_last_tokens(text: str, model: str = "gpt-4-turbo", num_tokens: int = 128
     Returns:
         str: 最后 num_tokens 个 token 解码后的文本.
     """
-    encoding = tiktoken.encoding_for_model(model)
+    if model == "deepseek-reasoner":
+        # DeepSeek-R1 模型计算 token 数需指定编码方案
+        chat_tokenizer_dir = PROJECT_PATH + "/module/deepseek_v3_tokenizer/"
+        encoding = transformers.AutoTokenizer.from_pretrained(
+            chat_tokenizer_dir,
+            trust_remote_code=True
+        )
+    else:
+        encoding = tiktoken.encoding_for_model(model)
     tokens = encoding.encode(text)
     # 截取最后 num_tokens 个 token
     last_tokens = tokens[-num_tokens:]
     # 解码回文本
-    return encoding.decode(last_tokens)
+    if isinstance(encoding, transformers.models.llama.tokenization_llama_fast.LlamaTokenizerFast):
+        return encoding.decode(last_tokens, skip_special_tokens=True)
+    else:
+        return encoding.decode(last_tokens)
