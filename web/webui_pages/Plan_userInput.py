@@ -13,32 +13,19 @@ from web.constant import (
     MODEL
 )
 from web.stream import llm_out_st
-from module.LLM import (
-    info_prompt_template,
-    param_prompt_template,
-    code_prompt_template
-)
-from module.LLM import (
-    example_user_input,
-    example_info_output,
-    example_info_input,
-    example_param_output,
-    example_param_input,
-    example_code_output
-)
-from module.LLM import (
-    user_input_json,
-    user_input_detail_json,
-)
-from module.utils import get_openai_client, call_openai, call_openai_stream
 from module.utils import PROJECT_PATH
+from module.LLM import info_prompt_template
+from module.LLM import example_user_input, example_knowledge, example_info_output
 
-with open(PROJECT_PATH + "/device_set/ggp_knowledge_set.json", "r", encoding="utf-8") as f:
+with open(PROJECT_PATH + "/data/device_set/ggp_knowledge_set.json", "r", encoding="utf-8") as f:
     ggp_knowledge = json.load(f)
-with open(PROJECT_PATH + "/device_set/device_knowledge.json", "r", encoding="utf-8") as f:
+with open(PROJECT_PATH + "/data/device_set/device_knowledge.json", "r", encoding="utf-8") as f:
     device_knowledge = json.load(f)
-with open(PROJECT_PATH + "/device_set/load_knowledge_set.json", "r", encoding="utf-8") as f:
+with open(PROJECT_PATH + "/data/device_set/load_knowledge_set.json", "r", encoding="utf-8") as f:
     load_knowledge = json.load(f)
+
+with open(PROJECT_PATH + "/web/user_input.json", "r", encoding="utf-8") as f:
+    user_input_json = json.load(f)
 
 # def plan_userInput(client):
 #     col1, col2 = st.columns(2)
@@ -66,7 +53,6 @@ with open(PROJECT_PATH + "/device_set/load_knowledge_set.json", "r", encoding="u
 
 # 页面内容
 def page_user2json(client):
-
     def save_description(description):
         st.session_state.description = description
         st.info("保存成功")
@@ -82,13 +68,14 @@ def page_user2json(client):
             info_sys_prompt = info_prompt_template[0]
             info_user_prompt = info_prompt_template[1].format(
                 example_user_input=json.dumps(example_user_input, ensure_ascii=False),
+                example_knowledge=json.dumps(example_knowledge, ensure_ascii=False),
                 example_output=json.dumps(example_info_output, ensure_ascii=False),
+                user_input=json.dumps(user_input, ensure_ascii=False),
                 # Filter device knowledge based on user's selected equipment
-                know_input=json.dumps({
+                knowledge=json.dumps({
                     "device_knowledge": filtered_device_knowledge,
                     "ggp_knowledge": ggp_knowledge
                 }, ensure_ascii=False),
-                user_input=json.dumps(user_input, ensure_ascii=False)
             )
             full_response = llm_out_st(
                 client=client,

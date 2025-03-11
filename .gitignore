@@ -166,5 +166,8 @@ gen_tmp.py
 # 测试用输出代码文件
 tmp.py
 
+# prompt history
+module/LLM/prompt_history/
+
 # user_api_key
 module/openai_config.json

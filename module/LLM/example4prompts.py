@@ -1,10 +1,32 @@
+import json
+from module.utils import PROJECT_PATH
+
+with open(PROJECT_PATH + "/data/device_set/ggp_knowledge_set.json", "r", encoding="utf-8") as f:
+    ggp_knowledge = json.load(f)
+with open(PROJECT_PATH + "/data/device_set/device_knowledge.json", "r", encoding="utf-8") as f:
+    device_knowledge = json.load(f)
+with open(PROJECT_PATH + "/data/device_set/load_knowledge_set.json", "r", encoding="utf-8") as f:
+    load_knowledge = json.load(f)
+
 # info_prompt的示例输入和输出 #3@FU39
 example_user_input = {
-    "项目描述": "本项目为榆林科创新城零碳分布式智慧能源中心示范项目，为运动员村进行供冷、供热以及供电服务。运动员村项目包括酒店、运动 员餐厅、办公、教育、住宅、公寓、体育等建筑。项目建设用地面积93347.47 m2，总建筑面积20.6万m2，地上建筑面积14万m2，其中住宅5.6万m2，办公4.9 万m2，酒店及运动员餐厅2.1万m2，健身中心0.5万m2，配套0.9万m2。由于DK1-13#楼酒店及运动员餐厅仅大堂地暖需能源站供应，实际供能面积约为12万m2。",
-    "项目地理位置": "陕西省榆林市",
-    "土地使用情况": "供能面积约为12万m2",
-    "项目供能对象描述": "为运动员村进行供冷、供热以及供电服务",
-    "项目预期描述": "最大化系统经济型，实现零碳供应能量，设备包括光伏板（pv）、太阳能集热器（sc）、氢燃料电池（fc）、电解槽（el）、电锅炉（eb）、热泵（hp）、地源热泵（ghp）、储氢罐（hst）、蓄水箱（tank）以及其他必要装置设备。"
+    "地理位置": "陕西省",
+    "建筑类型": "宾馆",
+    "可再生能源设备需求": ["氢燃料电池", "电解槽", "光伏板"],
+    "供热设备需求": ["电锅炉", "地源热泵", "空气源热泵", "太阳能集热器", "热水箱"],
+    "供冷设备需求": ["地源热泵", "空气源热泵", "冷却塔"],
+    "冷负荷峰值": 100000,
+    "热负荷峰值": 200000,
+    "电负荷峰值": 50000,
+    "建筑面积": 12000,
+    "年总收益": 5000000,
+    "分时电价": [0.5] * 24,
+    "氢气价格": 20.0,
+    "天然气价格": 50.0
+}
+example_knowledge = {
+    "设备信息": device_knowledge,
+    "地理区域信息": ggp_knowledge
 }
 example_info_output = {
     "背景知识": "构建能源系统规划问题，在满足设备运行约束、能量平衡约束和其他附加约束的前提下，构建经济最优目标函数，计算得到设备容量和全年运行数据",
@@ -172,7 +194,7 @@ example_info_output = {
 example_info_input = example_info_output
 example_param_output = {
     "load": {
-        "building_type":"Hotel",
+        "building_type": "Hotel",
         "p_max": 300,
         "g_max": 4000,
         "q_max": 2000,

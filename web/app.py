@@ -129,7 +129,7 @@ def test_api(container):
         for chunk in completion:
             if chunk.choices:
                 content = chunk.choices[0].delta.content
-                if content is not None:
+                if content:
                     full_response += content
                     # Update the container with the latest content
                     container.markdown(full_response)

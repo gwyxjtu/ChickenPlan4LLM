@@ -162,10 +162,14 @@ def call_openai_stream(
     if not last_messages:
         if system_prompt is None or user_prompt is None:
             raise ValueError("首次请求时必须提供 system_prompt 和 user_prompt.")
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ]
+        if model == "deepseek-reasoner":
+            # DeepSeek-R1 avoids adding a system prompt; all instructions should be contained within the user prompt
+            messages = [{"role": "user", "content": system_prompt + user_prompt}]
+        else:
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ]
     else:
         # 续写时: 保留已有消息, 并追加上一次的回答和续写指令
         messages = copy.deepcopy(last_messages)

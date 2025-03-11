@@ -63,7 +63,7 @@ def read_load(load_json, file_load=""):
 
 
 # 读参数json
-with open(project_path + "/web/data/parameters.json", "r", encoding="utf-8") as load_file:
+with open(project_path + "/log/parameters_gen.json", "r", encoding="utf-8") as load_file:
     input_json = json.load(load_file)
     
 # 读负荷csv

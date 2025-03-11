@@ -46,6 +46,11 @@ def llm_out_st(client, system_prompt, user_prompt, text_content):
                 # 此外，DeepSeek-R1 会在思考部分结束后返回一个"\n\n"，需要去掉
                 if last_response.startswith("\n\n"):
                     last_response = last_response[2:]
+
+            if "（接上文）" in last_response:
+                full_response += last_response.split("（接上文）")[1].strip()
+            else:
+                full_response += last_response
             full_response += last_response
 
             if last_finish_reason == "length":
