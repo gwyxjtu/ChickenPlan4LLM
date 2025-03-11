@@ -55,7 +55,7 @@ def exec_opt(client):
     # current_output += code_to_execute + "\n"
     # output_area.code(current_output)
 
-    with open(PROJECT_PATH + "/tmp.py", "w", encoding="utf-8") as f:
+    with open(PROJECT_PATH + "/log/code_gen.py", "w", encoding="utf-8") as f:
         f.write(code_to_execute)
 
     try:
@@ -97,26 +97,54 @@ def exec_opt(client):
                 }, ensure_ascii=False),
                 problem=error_msg
             )
-            
-            completion = call_openai_stream(
-                client=client,
-                system_prompt=code_sys_prompt,
-                user_prompt=code_user_prompt,
-                model=MODEL,
-                max_response_tokens=8192,
-                temperature=0.3
-            )
-            
+            last_messages = None
+            last_response = None
+            last_finish_reason = None
             full_response = ""
-            for chunk in completion:
-                content = chunk.choices[0].delta.content
-                if content is None:
-                    if "```python" in full_response:
-                        full_response = full_response.split("```python")[1].split("```")[0].strip()
-                    st.session_state.code = full_response
-                    exec_opt(client)  # Recursive retry with new code
+            while True:
+                completion, messages = call_openai_stream(
+                    client=client,
+                    system_prompt=code_sys_prompt,
+                    user_prompt=code_user_prompt,
+                    model=MODEL,
+                    last_messages=last_messages,
+                    last_response=last_response,
+                    max_response_tokens=16384,
+                    temperature=0.3
+                )
+                last_response = ""
+                for chunk in completion:
+                    if chunk.choices:
+                        content = chunk.choices[0].delta.content if chunk.choices[0].delta.content else ""
+                        if content:
+                            last_response += content
+                        if chunk.choices[0].finish_reason is not None:
+                            last_finish_reason = chunk.choices[0].finish_reason
+                    if chunk.usage:
+                        usage_info = chunk.usage
+
+                if MODEL == "deepseek-reasoner":
+                    if "</think>" in last_response:
+                        last_response = last_response.split("</think>")[1].strip()
+                    if last_response.startswith("\n\n"):
+                        last_response = last_response[2:]
+
+                if "（接上文）" in last_response:
+                    full_response += last_response.split("（接上文）")[1].strip()
                 else:
-                    full_response += content
+                    full_response += last_response
+
+                if last_finish_reason == "length":
+                    code_sys_prompt = None
+                    code_user_prompt = None
+                    last_messages = messages
+                else:
+                    break
+
+            if "```python" in full_response:
+                full_response = full_response.split("```python")[1].split("```")[0].strip()
+            st.session_state.code = full_response
+            exec_opt(client)  # Recursive retry with new code
         else:
             st.session_state.run_results.append({"error": error_msg})
             st.session_state.retry_count = 0  # Reset retry count after max retries

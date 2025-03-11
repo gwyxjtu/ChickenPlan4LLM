@@ -162,9 +162,13 @@ cython_debug/
 # test
 test.py
 gen_tmp.py
+update_log.md
 
 # 测试用输出代码文件
 tmp.py
+
+# prompt history
+module/LLM/prompt_history/
 
 # user_api_key
 module/openai_config.json
