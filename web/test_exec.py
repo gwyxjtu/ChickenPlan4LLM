@@ -13,10 +13,9 @@ import traceback
 from module import code_template
 from module.LLM import example_code_output
 
-project_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-project_path = project_path.replace("\\", "/")
+from module.utils import PROJECT_PATH
 
-local_env = {"project_path": project_path}
+local_env = {"project_path": PROJECT_PATH}
 
 solver_code = """
 def planning_problem(period_data, input_param):

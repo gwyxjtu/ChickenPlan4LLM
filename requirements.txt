@@ -1,4 +1,6 @@
 openai==1.52.2
+tiktoken
+transformers
 gurobipy>=10.0.3
 streamlit
 streamlit-option-menu

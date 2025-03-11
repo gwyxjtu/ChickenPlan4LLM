@@ -1,11 +1,3 @@
-'''
-Author: guo_MateBookPro 867718012@qq.com
-Date: 2025-02-07 11:08:28
-LastEditTime: 2025-02-28 13:45:39
-LastEditors: guo_MateBookPro 867718012@qq.com
-FilePath: /ChickenPlan4LLM/module/code_template.py
-Description: 雪花掩盖着哽咽叹息这离别
-'''
 code_template = """
 import sys
 import os
@@ -14,8 +6,8 @@ import numpy as np
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
-project_path = os.path.dirname(os.path.realpath(__file__))
-project_path = project_path.replace("\\\\", "/")
+
+
 def read_load(load_json, file_load=""):
     if not load_json["building_type"]:
         raise ValueError("building_type cannot be empty")
@@ -63,7 +55,7 @@ def read_load(load_json, file_load=""):
     if model.status == GRB.INFEASIBLE or model.status == 4:
         print("Model is infeasible")
         model.computeIIS()
-        model.write(project_path+"/log/model.ilp")
+        model.write(project_path + "/log/model.ilp")
         print("Irreducible inconsistent subsystem is written to file 'model.ilp'")
  
     device_cap = {{x: y.X for x, y in device_inst_list.items()}}
@@ -71,7 +63,7 @@ def read_load(load_json, file_load=""):
 
 
 # 读参数json
-with open(project_path+"/web/data/parameters.json", "r", encoding="utf-8") as load_file:
+with open(project_path + "/web/data/parameters.json", "r", encoding="utf-8") as load_file:
     input_json = json.load(load_file)
     
 # 读负荷csv

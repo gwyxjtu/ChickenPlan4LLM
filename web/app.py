@@ -6,9 +6,9 @@ LastEditors: guo_MateBookPro 867718012@qq.com
 FilePath: /ChickenPlan4LLM/web/app.py
 Description: 雪花掩盖着哽咽叹息这离别
 '''
-import os
+from pathlib import Path
 import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import time
 import json
 import pandas as pd
@@ -30,32 +30,24 @@ from constant import (
     MODEL
 )
 
-from module.LLM import (
-    info_prompt_template,
-    param_prompt_template,
-    code_prompt_template
-)
-from module.LLM import (
-    example_user_input,
-    example_info_output,
-    example_info_input,
-    example_param_output,
-    example_param_input,
-    example_code_output
-)
-from module import get_openai_client, call_openai, call_openai_stream
+from module.utils import get_openai_client, call_openai, call_openai_stream
+from module.utils import PROJECT_PATH
+
+from webui_pages.Plan_json_and_data import page_json2param
+from webui_pages.Plan_userInput import page_user2json
+from webui_pages.Plan_genOpt import page_param2code
+from webui_pages.Plan_exec_plot import page_result
 
 # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体，确保系统已安装
 plt.rcParams['axes.unicode_minus'] = False  # 解决负号显示问题
 
-# 设置项目路径
-project_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-project_path = project_path.replace("\\", "/")
-# openai_config_path = os.path.join(project_path, "module/openai_config.json")
+# # 设置项目路径
+# project_path = str(Path(__file__).resolve().parents[1]).replace("\\", "/")
+# # openai_config_path = os.path.join(project_path, "module/openai_config.json")
 
 # 获取 OpenAI 客户端
-openai_config_path = project_path + "/module/openai_config.json"
+openai_config_path = PROJECT_PATH + "/module/openai_config.json"
 client = get_openai_client(openai_config_path)
 
 # 页面配置
@@ -85,10 +77,10 @@ if "current_page" not in st.session_state:
 def page_home():
     col1, col2, _ = st.columns([7, 2.5, 1])
     with col1:
-        sys_img_path = project_path+"/images/system.jpeg"
+        sys_img_path = PROJECT_PATH + "/images/system.jpeg"
         st.markdown('<div class="home-title">大模型驱动数据中心能源系统运维管理平台</div>', unsafe_allow_html=True)
         st.image(sys_img_path, use_column_width=True)
-        st.button("Test Streaming API", on_click=lambda:test_api(col1))
+        st.button("Test Streaming API", on_click=lambda: test_api(col1))
     with col2:
         st.markdown("<div class='home-button-container'>", unsafe_allow_html=True)
         # 使用特定的 home-page-button 类名包裹按钮
@@ -115,6 +107,7 @@ def navigate_to_planning():
 
 def navigate_to_home():
     st.session_state["current_page"] = "Home"
+
 
 # 写一个按钮测试api接口
 def test_api(container):
@@ -147,17 +140,8 @@ def test_api(container):
             container.warning("No response received")
 
 
-
-from webui_pages.Plan_json_and_data import page_json2param
-from webui_pages.Plan_userInput import page_user2json
-from webui_pages.Plan_genOpt import page_param2code
-from webui_pages.Plan_exec_plot import page_result
-
-
 # 页面标题
 st.title("Energy LLM")
-
-
 
 # 判断显示首页或工作流页面
 if st.session_state["current_page"] == "Home":
