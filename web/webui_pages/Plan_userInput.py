@@ -1,5 +1,9 @@
+from pathlib import Path
+import json
+import streamlit as st
+from streamlit_ace import st_ace
 
-from constant import (
+from web.constant import (
     DEFAULT_DESCRIPTION,
     DEFAULT_JSON_DESCRIPTION,
     DEFAULT_PARAMS,
@@ -8,6 +12,7 @@ from constant import (
     CODE_EDITOR_HEIGHT,
     MODEL
 )
+from web.stream import llm_out_st
 from module.LLM import (
     info_prompt_template,
     param_prompt_template,
@@ -26,39 +31,39 @@ from module.LLM import (
     user_input_detail_json,
 )
 from module import get_openai_client, call_openai, call_openai_stream
-import streamlit as st
-from streamlit_ace import st_ace
-import json
 
-with open("device_set/ggp_knowledge_set.json", "r", encoding="utf-8") as f:
-    ggp_konwledge = json.load(f)
-with open("device_set/device_knowledge.json", "r", encoding="utf-8") as f:
-    device_konwledge = json.load(f)
-with open("device_set/load_knowledge_set.json", "r", encoding="utf-8") as f:
-    load_konwledge = json.load(f)
+project_path = Path(__file__).resolve().parents[2]
 
-def plan_userInput(client):
-    col1, col2 = st.columns(2)
-    with col1:
-        description = {
-            "地理位置": st.selectbox("地理位置", options=user_input_json["地理位置"]),
-            "建筑类型": st.selectbox("建筑类型", options=user_input_json["建筑类型"]),
-            # "建筑面积": st.selectbox("建筑面积", options=user_input_json["建筑面积"]),
-            "可再生能源设备需求": st.multiselect("可再生能源设备需求", options=user_input_json["可再生能源设备需求"]),
-            "供热设备需求": st.multiselect("供热设备需求", options=user_input_json["供热设备需求"]),
-            "供冷设备需求": st.multiselect("供冷设备需求", options=user_input_json["供冷设备需求"])
-        }
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            st.button("保存描述", on_click=save_description, args=(description,), use_container_width=True)
-        with c2:
-            st.button("生成Json", on_click=generate_json, use_container_width=True)
-        with c3:
-            st.button("清空信息", on_click=clear_json, use_container_width=True)
-    with col2:
-        st.text("JSON描述")
-        json_description = st_ace(st.session_state.get("json_description", "无内容"), language="json", height=CODE_EDITOR_HEIGHT)
-        st.session_state.json_description = json_description
+with open(project_path / "device_set/ggp_knowledge_set.json", "r", encoding="utf-8") as f:
+    ggp_knowledge = json.load(f)
+with open(project_path / "device_set/device_knowledge.json", "r", encoding="utf-8") as f:
+    device_knowledge = json.load(f)
+with open(project_path / "device_set/load_knowledge_set.json", "r", encoding="utf-8") as f:
+    load_knowledge = json.load(f)
+
+# def plan_userInput(client):
+#     col1, col2 = st.columns(2)
+#     with col1:
+#         description = {
+#             "地理位置": st.selectbox("地理位置", options=user_input_json["地理位置"]),
+#             "建筑类型": st.selectbox("建筑类型", options=user_input_json["建筑类型"]),
+#             # "建筑面积": st.selectbox("建筑面积", options=user_input_json["建筑面积"]),
+#             "可再生能源设备需求": st.multiselect("可再生能源设备需求", options=user_input_json["可再生能源设备需求"]),
+#             "供热设备需求": st.multiselect("供热设备需求", options=user_input_json["供热设备需求"]),
+#             "供冷设备需求": st.multiselect("供冷设备需求", options=user_input_json["供冷设备需求"])
+#         }
+#         c1, c2, c3 = st.columns(3)
+#         with c1:
+#             st.button("保存描述", on_click=save_description, args=(description,), use_container_width=True)
+#         with c2:
+#             st.button("生成Json", on_click=generate_json, use_container_width=True)
+#         with c3:
+#             st.button("清空信息", on_click=clear_json, use_container_width=True)
+#     with col2:
+#         st.text("JSON描述")
+#         json_description = st_ace(st.session_state.get("json_description", "无内容"), language="json", height=CODE_EDITOR_HEIGHT)
+#         st.session_state.json_description = json_description
+
 
 # 页面内容
 def page_user2json(client):
@@ -71,8 +76,7 @@ def page_user2json(client):
     def generate_json():
         user_input = st.session_state.description
         selected_devices = user_input.get("可再生能源设备需求", []) + user_input.get("供热设备需求", []) + user_input.get("供冷设备需求", [])
-        filtered_device_knowledge = {k: v for k, v in device_konwledge.items() 
-                                           if k in selected_devices}
+        filtered_device_knowledge = {k: v for k, v in device_knowledge.items() if k in selected_devices}
         # print(filtered_device_knowledge)
         st.session_state.filtered_device_knowledge = filtered_device_knowledge
         if user_input:
@@ -83,36 +87,17 @@ def page_user2json(client):
                 # Filter device knowledge based on user's selected equipment
                 know_input=json.dumps({
                     "device_knowledge": filtered_device_knowledge,
-                    "ggp_knowledge": ggp_konwledge
+                    "ggp_knowledge": ggp_knowledge
                 }, ensure_ascii=False),
                 user_input=json.dumps(user_input, ensure_ascii=False)
             )
-            completion = call_openai_stream(
+            full_response = llm_out_st(
                 client=client,
                 system_prompt=info_sys_prompt,
                 user_prompt=info_user_prompt,
-                model=MODEL,
-                max_response_tokens=8192,
-                max_tokens=16384,
-                temperature=0.3
+                text_content="JSON描述"
             )
-            with st.empty():
-                st.text("JSON描述")
-                full_response = ""
-                for i, chunk in enumerate(completion):
-                    content = chunk.choices[0].delta.content
-                    if content is None:
-                        st.write("生成完成")
-                        if "```json" in full_response:
-                            full_response = full_response.split("```json")[1].split("```")[0].strip()
-                        elif "```python" in full_response:
-                            full_response = full_response.split("```python")[1].split("```")[0].strip()
-                        st.session_state.json_description = full_response
-                    else:
-                        full_response += content
-                        st.write(full_response)
-                        st.session_state.json_description = full_response
-                    
+            st.session_state.json_description = full_response
         else:
             st.warning("请先输入问题描述")
 

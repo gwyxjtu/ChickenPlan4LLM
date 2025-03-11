@@ -1,14 +1,14 @@
-import os
+from pathlib import Path
 import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
-
-print(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+import traceback
 import json
 import streamlit as st
 from streamlit_ace import st_ace
-from constant import CODE_EDITOR_HEIGHT, MODEL
 
+from web.constant import CODE_EDITOR_HEIGHT, MODEL
+from web.stream import llm_out_st
 from module.LLM import (
     code_prompt_template,
     code_prompt_cot_template,
@@ -18,15 +18,11 @@ from module.LLM import (
 )
 from module import call_openai_stream
 from module import code_template
-import traceback
 
-import os
-import sys
+project_path = str(Path(__file__).resolve().parents[2]).replace("\\", "/")
+
 
 def exec_opt(client):
-    project_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-    project_path = project_path.replace("\\", "/")
-
     # Initialize retry count if not exists
     if 'retry_count' not in st.session_state:
         st.session_state.retry_count = 0
@@ -106,7 +102,6 @@ def exec_opt(client):
                 user_prompt=code_user_prompt,
                 model=MODEL,
                 max_response_tokens=8192,
-                max_tokens=16384,
                 temperature=0.3
             )
             
@@ -140,38 +135,17 @@ def page_param2code(client):
                 example_output=example_code_output,
                 info_input=json.dumps(info_input, ensure_ascii=False),
                 param_input=json.dumps(param_input, ensure_ascii=False),
-                know_input = json.dumps({
+                know_input=json.dumps({
                     "device_knowledge": st.session_state.filtered_device_knowledge
                 }, ensure_ascii=False),
             )
-            # print(code_user_prompt)
-            completion = call_openai_stream(
+            full_response = llm_out_st(
                 client=client,
                 system_prompt=code_sys_prompt,
                 user_prompt=code_user_prompt,
-                model=MODEL,
-                max_response_tokens=8192,
-                max_tokens=16384,
-                temperature=0.3
+                text_content="正在生成代码"
             )
-            with st.empty():
-                st.text("正在生成代码")
-                full_response = ""
-                for i, chunk in enumerate(completion):
-                    content = chunk.choices[0].delta.content
-                    if content is None:
-                        st.write("代码已生成")
-                        if "```json" in full_response:
-                            # 删除开头的```json和结尾的```，以及两端的换行符
-                            full_response = full_response.split("```json")[1].split("```")[0].strip()
-                        elif "```python" in full_response:
-                            # 删除开头的```python和结尾的```，以及两端的换行符
-                            full_response = full_response.split("```python")[1].split("```")[0].strip()
-                        st.session_state.code = full_response
-                    else:
-                        full_response += content
-                        st.write(full_response)
-                        st.session_state.code = full_response
+            st.session_state.code = full_response
         else:
             st.warning("JSON描述或参数缺失")
 

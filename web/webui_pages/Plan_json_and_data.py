@@ -1,15 +1,9 @@
-'''
-Author: guo_MateBookPro 867718012@qq.com
-Date: 2025-01-09 16:43:35
-LastEditTime: 2025-02-15 20:10:29
-LastEditors: guo_MateBookPro 867718012@qq.com
-FilePath: /ChickenPlan4LLM/web/webui_pages/Plan_json_and_data.py
-Description: 雪花掩盖着哽咽叹息这离别
-'''
+from pathlib import Path
 import json
 import streamlit as st
 from streamlit_ace import st_ace
-from constant import (
+
+from web.constant import (
     DEFAULT_DESCRIPTION,
     DEFAULT_JSON_DESCRIPTION,
     DEFAULT_PARAMS,
@@ -18,6 +12,7 @@ from constant import (
     CODE_EDITOR_HEIGHT,
     MODEL
 )
+from web.stream import llm_out_st
 from module.LLM import (
     param_prompt_template,
     example_user_input,
@@ -25,6 +20,9 @@ from module.LLM import (
     example_param_output
 )
 from module import call_openai_stream
+
+project_path = Path(__file__).resolve().parents[2]
+
 
 def page_json2param(client):
     
@@ -42,33 +40,13 @@ def page_json2param(client):
                 user_input=json.dumps(user_input, ensure_ascii=False),
                 param_info_input=json.dumps(info_input, ensure_ascii=False)
             )
-            completion = call_openai_stream(
+            full_response = llm_out_st(
                 client=client,
                 system_prompt=param_sys_prompt,
                 user_prompt=param_user_prompt,
-                model=MODEL,
-                max_response_tokens=8192,
-                max_tokens=16384,
-                temperature=0.3
+                text_content="正在生成参数"
             )
-            with st.empty():
-                st.text("正在生成参数")
-                full_response = ""
-                for i, chunk in enumerate(completion):
-                    content = chunk.choices[0].delta.content
-                    if content is None:
-                        st.write("生成完成")
-                        if "```json" in full_response:
-                            # 删除开头的```json和结尾的```，以及两端的换行符
-                            full_response = full_response.split("```json")[1].split("```")[0].strip()
-                        elif "```python" in full_response:
-                            # 删除开头的```python和结尾的```，以及两端的换行符
-                            full_response = full_response.split("```python")[1].split("```")[0].strip()
-                        st.session_state.parameters = full_response
-                    else:
-                        full_response += content
-                        st.write(full_response)
-                        st.session_state.parameters = full_response
+            st.session_state.parameters = full_response
         else:
             st.warning("问题描述或JSON描述缺失")
         # write json
@@ -76,7 +54,7 @@ def page_json2param(client):
             # Parse the JSON string to ensure valid format
             json_data = json.loads(st.session_state.parameters)
             # Write the parsed JSON with standard formatting
-            with open("web/data/parameters.json", "w", encoding="utf-8") as f:
+            with open(project_path / "web/data/parameters.json", "w", encoding="utf-8") as f:
                 json.dump(json_data, f, ensure_ascii=False, indent=4)
         except json.JSONDecodeError:
             st.error("Invalid JSON format in parameters")
