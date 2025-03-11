@@ -113,11 +113,13 @@ def navigate_to_home():
 def test_api(container):
     system_prompt = "You are a helpful assistant."
     user_prompt = "Say hello and introduce yourself briefly."
-    completion = call_openai_stream(
+    completion, messages = call_openai_stream(
         client=client,
         system_prompt=system_prompt,
         user_prompt=user_prompt,
-        model=MODEL
+        model=MODEL,
+        max_response_tokens=16384,
+        temperature=0.6
     )
     # breakpoint()
     # Create a container for streaming output
@@ -125,11 +127,12 @@ def test_api(container):
     full_response = ""
     try:
         for chunk in completion:
-            content = chunk.choices[0].delta.content
-            if content is not None:
-                full_response += content
-                # Update the container with the latest content
-                container.markdown(full_response)
+            if chunk.choices:
+                content = chunk.choices[0].delta.content
+                if content is not None:
+                    full_response += content
+                    # Update the container with the latest content
+                    container.markdown(full_response)
     except Exception as e:
         container.error(f"Error during streaming: {str(e)}")
     finally:

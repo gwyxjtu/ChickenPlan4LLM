@@ -53,7 +53,7 @@ def page_json2param(client):
             # Parse the JSON string to ensure valid format
             json_data = json.loads(st.session_state.parameters)
             # Write the parsed JSON with standard formatting
-            with open(PROJECT_PATH / "web/data/parameters.json", "w", encoding="utf-8") as f:
+            with open(PROJECT_PATH + "/web/data/parameters.json", "w", encoding="utf-8") as f:
                 json.dump(json_data, f, ensure_ascii=False, indent=4)
         except json.JSONDecodeError:
             st.error("Invalid JSON format in parameters")

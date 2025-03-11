@@ -19,22 +19,25 @@ def llm_out_st(client, system_prompt, user_prompt, text_content):
                 last_messages=last_messages,
                 last_response=last_response,
                 max_response_tokens=16384,
-                temperature=0.3
+                temperature=0.6
             )
             last_response = ""
             last_reasoning_response = ""
             output = ""
             for chunk in completion:
-                delta = chunk.choices[0].delta
-                content = delta.content if delta.content else ""
-                if hasattr(delta, "reasoning_content") and delta.reasoning_content:
-                    last_reasoning_response += delta.reasoning_content
-                else:
-                    last_response += content
-                    output = full_response + last_response
-                    st.write(output)
-                if chunk.choices[0].finish_reason is not None:
-                    last_finish_reason = chunk.choices[0].finish_reason
+                if chunk.choices:
+                    delta = chunk.choices[0].delta
+                    content = delta.content if delta.content else ""
+                    if hasattr(delta, "reasoning_content") and delta.reasoning_content:
+                        last_reasoning_response += delta.reasoning_content
+                    else:
+                        last_response += content
+                        output = full_response + last_response
+                        st.write(output)
+                    if chunk.choices[0].finish_reason is not None:
+                        last_finish_reason = chunk.choices[0].finish_reason
+                if chunk.usage:
+                    usage_info = chunk.usage
 
             if MODEL == "deepseek-reasoner":
                 # 若使用 DeepSeek-R1, 由于第三方服务可能将思考部分包围在 <think> 和 </think> 中, 只保留后续部分
