@@ -13,7 +13,7 @@ DEFAULT_CODE = ""
 
 TEXT_AREA_HEIGHT = 200
 CODE_EDITOR_HEIGHT = 400
-MODEL = "gpt-4o-mini"
+MODEL = "deepseek-reasoner"
 # "gpt-4o-mini"
 # "o1-mini"
 # "deepseek-reasoner"

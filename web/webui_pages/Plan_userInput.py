@@ -33,11 +33,11 @@ from module.LLM import (
 from module.utils import get_openai_client, call_openai, call_openai_stream
 from module.utils import PROJECT_PATH
 
-with open(PROJECT_PATH / "device_set/ggp_knowledge_set.json", "r", encoding="utf-8") as f:
+with open(PROJECT_PATH + "/device_set/ggp_knowledge_set.json", "r", encoding="utf-8") as f:
     ggp_knowledge = json.load(f)
-with open(PROJECT_PATH / "device_set/device_knowledge.json", "r", encoding="utf-8") as f:
+with open(PROJECT_PATH + "/device_set/device_knowledge.json", "r", encoding="utf-8") as f:
     device_knowledge = json.load(f)
-with open(PROJECT_PATH / "device_set/load_knowledge_set.json", "r", encoding="utf-8") as f:
+with open(PROJECT_PATH + "/device_set/load_knowledge_set.json", "r", encoding="utf-8") as f:
     load_knowledge = json.load(f)
 
 # def plan_userInput(client):
