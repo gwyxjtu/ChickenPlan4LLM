@@ -162,6 +162,7 @@ cython_debug/
 # test
 test.py
 gen_tmp.py
+update_log.md
 
 # 测试用输出代码文件
 tmp.py
