@@ -58,7 +58,7 @@ def exec_opt(client):
     # current_output += code_to_execute + "\n"
     # output_area.code(current_output)
 
-    with open(PROJECT_PATH + "/log/code_gen.py", "w", encoding="utf-8") as f:
+    with open(log_dir + "/code_gen.py", "w", encoding="utf-8") as f:
         f.write(code_to_execute)
 
     try:
