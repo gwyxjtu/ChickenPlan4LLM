@@ -48,9 +48,9 @@ class OpenAILogger:
         messages_str = "\n".join([f"[{msg['role']}] {msg['content']}" for msg in messages])
         log_content = (
             f"Conversation Start.\n"
-            f"Messages:\n{messages_str}\n"
-            f"Response:\n{full_response}\n"
-            f"Conversation End.\n{'=' * 50}"
+            f"{'-' * 50}\nMESSAGE:\n{messages_str}\n"
+            f"{'-' * 50}\nRESPONSE:\n{full_response}\n"
+            f"{'-' * 50}\nConversation End.\n{'=' * 50}"
         )
 
         # 记录日志
