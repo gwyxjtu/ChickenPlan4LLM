@@ -68,4 +68,4 @@ def llm_out_st(client, system_prompt, user_prompt, text_content):
         if "```python" in full_response:
             full_response = full_response.split("```python")[1].split("```")[0].strip()
 
-        return full_response
+        return full_response, messages

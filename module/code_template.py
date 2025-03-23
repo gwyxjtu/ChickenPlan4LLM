@@ -44,9 +44,12 @@ def read_load(load_json, file_load=""):
         'r_solar': load['Environment:Site Direct Solar Radiation Rate per Area [W/m2](Hourly)']
     }}
 {solver_code}
+
+
+def run_model(model, device_inst_list):
     # ------ Optimize ------
     model.params.NonConvex = 2
-    model.Params.LogFile = project_path + "/log/mip.log"
+    model.Params.LogFile = log_dir + "/mip.log"
     model.params.MIPGap = 0.01
     try:
         model.optimize()
@@ -55,7 +58,7 @@ def read_load(load_json, file_load=""):
     if model.status == GRB.INFEASIBLE or model.status == 4:
         print("Model is infeasible")
         model.computeIIS()
-        model.write(project_path + "/log/model.ilp")
+        model.write(log_dir + "/model.ilp")
         print("Irreducible inconsistent subsystem is written to file 'model.ilp'")
  
     device_cap = {{x: y.X for x, y in device_inst_list.items()}}
@@ -63,13 +66,14 @@ def read_load(load_json, file_load=""):
 
 
 # 读参数json
-with open(project_path + "/log/parameters_gen.json", "r", encoding="utf-8") as load_file:
+with open(log_dir + "/parameters_gen.json", "r", encoding="utf-8") as load_file:
     input_json = json.load(load_file)
     
 # 读负荷csv
 load = read_load(input_json["load"])
 
-device_cap = planning_problem(load, input_json)
+model, device_inst_list = planning_problem(load, input_json)
+device_cap = run_model(model, device_inst_list)
 planning_result_path = project_path + "/doc/planning_result.json"
 with open(planning_result_path, "w", encoding="utf-8") as f:
     json.dump(device_cap, f, ensure_ascii=False, indent=4)

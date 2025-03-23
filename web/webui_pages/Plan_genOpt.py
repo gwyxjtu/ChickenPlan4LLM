@@ -18,7 +18,7 @@ from module.LLM import (
 )
 from module.utils import get_openai_client, call_openai_stream
 from module import code_template
-from module.utils import PROJECT_PATH
+from module.utils import PROJECT_PATH, LOG_ROOT
 
 
 def exec_opt(client):
@@ -34,9 +34,12 @@ def exec_opt(client):
     if 'run_results' not in st.session_state:
         st.session_state.run_results = []
 
+    handler_key = f"{st.session_state['current_page']}_{st.session_state['session_ts']}"
+    log_dir = f"{LOG_ROOT}/{handler_key}"
     local_env = {
         "__builtins__": __builtins__,
         "project_path": PROJECT_PATH,
+        "log_dir": log_dir
     }
     solver_code = st.session_state.code
     code_to_execute = code_template.format(solver_code=solver_code)
@@ -144,6 +147,13 @@ def exec_opt(client):
             if "```python" in full_response:
                 full_response = full_response.split("```python")[1].split("```")[0].strip()
             st.session_state.code = full_response
+            # 保存日志
+            st.session_state.conversation_logger.log(
+                ui_page=st.session_state["current_page"],
+                task="param2code_retry",
+                messages=messages,
+                full_response=full_response
+            )
             exec_opt(client)  # Recursive retry with new code
         else:
             st.session_state.run_results.append({"error": error_msg})
@@ -169,13 +179,20 @@ def page_param2code(client):
                     "device_knowledge": st.session_state.filtered_device_knowledge
                 }, ensure_ascii=False),
             )
-            full_response = llm_out_st(
+            full_response, messages = llm_out_st(
                 client=client,
                 system_prompt=code_sys_prompt,
                 user_prompt=code_user_prompt,
                 text_content="正在生成代码"
             )
             st.session_state.code = full_response
+            # 记录日志
+            st.session_state.conversation_logger.log(
+                ui_page=st.session_state["current_page"],
+                task="param2code",
+                messages=messages,
+                full_response=full_response
+            )
         else:
             st.warning("JSON描述或参数缺失")
 
