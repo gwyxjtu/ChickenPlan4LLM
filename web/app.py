@@ -217,9 +217,6 @@ def page_planning():
             page_result(client)
 
 
-"""
-页面逻辑
-"""
 # 页面标题
 st.title("Energy LLM")
 
