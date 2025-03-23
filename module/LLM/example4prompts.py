@@ -516,6 +516,8 @@ def planning_problem(period_data, input_param):
             - gp.quicksum([p_sell[t] for t in range(period)]) * p_sell_price
             + gp.quicksum([h_pur[t] for t in range(period)]) * h_price)  
     model.setObjective((capex + opex), GRB.MINIMIZE)
+    
+    return model, device_inst_list
 """
 
 if __name__ == "__main__":

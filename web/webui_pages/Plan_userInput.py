@@ -77,13 +77,20 @@ def page_user2json(client):
                     "ggp_knowledge": ggp_knowledge
                 }, ensure_ascii=False),
             )
-            full_response = llm_out_st(
+            full_response, messages = llm_out_st(
                 client=client,
                 system_prompt=info_sys_prompt,
                 user_prompt=info_user_prompt,
                 text_content="JSON描述"
             )
             st.session_state.json_description = full_response
+            # 记录日志
+            st.session_state.conversation_logger.log(
+                ui_page=st.session_state["current_page"],
+                task="user2json",
+                messages=messages,
+                full_response=full_response
+            )
         else:
             st.warning("请先输入问题描述")
 
