@@ -1,3 +1,11 @@
+'''
+Author: guo_MateBookPro 867718012@qq.com
+Date: 2025-03-23 13:11:09
+LastEditTime: 2025-03-26 17:13:59
+LastEditors: guo_MateBookPro 867718012@qq.com
+FilePath: /ChickenPlan4LLM/module/code_template.py
+Description: 雪花掩盖着哽咽叹息这离别
+'''
 code_template = """
 import sys
 import os
@@ -6,7 +14,9 @@ import numpy as np
 import pandas as pd
 import gurobipy as gp
 from gurobipy import GRB
+from pathlib import Path
 
+# project_path = str(Path(__file__).resolve().parents[2])
 
 def read_load(load_json, file_load=""):
     if not load_json["building_type"]:
@@ -46,36 +56,35 @@ def read_load(load_json, file_load=""):
 {solver_code}
 
 
-def run_model(model, device_inst_list):
-    # ------ Optimize ------
-    model.params.NonConvex = 2
-    model.Params.LogFile = log_dir + "/mip.log"
-    model.params.MIPGap = 0.01
-    try:
-        model.optimize()
-    except gp.GurobiError:
-        print("Optimize failed due to non-convexity")
-    if model.status == GRB.INFEASIBLE or model.status == 4:
-        print("Model is infeasible")
-        model.computeIIS()
-        model.write(log_dir + "/model.ilp")
-        print("Irreducible inconsistent subsystem is written to file 'model.ilp'")
- 
-    device_cap = {{x: y.X for x, y in device_inst_list.items()}}
-    return  device_cap
-
-
 # 读参数json
-with open(log_dir + "/parameters_gen.json", "r", encoding="utf-8") as load_file:
+para_path = project_path + "/log/opt_test/parameters.json"
+with open(para_path, "r", encoding="utf-8") as load_file:
     input_json = json.load(load_file)
     
 # 读负荷csv
 load = read_load(input_json["load"])
 
-model, device_inst_list = planning_problem(load, input_json)
-device_cap = run_model(model, device_inst_list)
-planning_result_path = project_path + "/doc/planning_result.json"
+model,device_inst_list = planning_problem(load, input_json)
+# ------ Optimize ------
+model.params.NonConvex = 2
+model.Params.LogFile = str(project_path + "/log/mip.log")
+model.params.MIPGap = 0.01
+try:
+    model.optimize()
+except gp.GurobiError:
+    print("Optimize failed due to non-convexity")
+if model.status == GRB.INFEASIBLE or model.status == 4:
+    print("Model is infeasible")
+    model.computeIIS()
+    model.write(project_path + "/log/opt_test/model.ilp")
+    print("Irreducible inconsistent subsystem is written to file 'model.ilp'")
+
+device_cap = {{x: y.X for x, y in device_inst_list.items()}}
+
+
+planning_result_path = project_path + "/log/opt_test/planning_result.json"
 with open(planning_result_path, "w", encoding="utf-8") as f:
     json.dump(device_cap, f, ensure_ascii=False, indent=4)
 print("device_cap result saved to", planning_result_path)
+
 """
