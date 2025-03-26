@@ -19,7 +19,7 @@ from module.LLM import (
     example_info_input,
     example_param_output
 )
-from module.utils import PROJECT_PATH
+from module.utils import PROJECT_PATH, LOG_ROOT
 
 
 def page_json2param(client):
@@ -38,13 +38,20 @@ def page_json2param(client):
                 user_input=json.dumps(user_input, ensure_ascii=False),
                 param_info_input=json.dumps(info_input, ensure_ascii=False)
             )
-            full_response = llm_out_st(
+            full_response, messages = llm_out_st(
                 client=client,
                 system_prompt=param_sys_prompt,
                 user_prompt=param_user_prompt,
                 text_content="正在生成参数"
             )
             st.session_state.parameters = full_response
+            # 记录日志
+            st.session_state.conversation_logger.log(
+                ui_page=st.session_state["current_page"],
+                task="json2param",
+                messages=messages,
+                full_response=full_response
+            )
         else:
             st.warning("问题描述或JSON描述缺失")
         # write json
@@ -52,7 +59,9 @@ def page_json2param(client):
             # Parse the JSON string to ensure valid format
             json_data = json.loads(st.session_state.parameters)
             # Write the parsed JSON with standard formatting
-            with open(PROJECT_PATH + "/log/parameters_gen.json", "w", encoding="utf-8") as f:
+            handler_key = f"{st.session_state['current_page']}_{st.session_state['session_ts']}"
+            log_dir = f"{LOG_ROOT}/{handler_key}"
+            with open(log_dir + "/parameters_gen.json", "w", encoding="utf-8") as f:
                 json.dump(json_data, f, ensure_ascii=False, indent=4)
         except json.JSONDecodeError:
             st.error("Invalid JSON format in parameters")
