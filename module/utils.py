@@ -8,7 +8,6 @@ import tiktoken
 import transformers
 
 PROJECT_PATH = str(Path(__file__).resolve().parents[1]).replace("\\", "/")
-
 res_dict = "./doc/"
 
 
