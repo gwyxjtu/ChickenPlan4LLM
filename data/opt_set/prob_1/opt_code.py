@@ -10,9 +10,9 @@ def planning_problem(period_data, input_param):
     # 参数输入，时序数据包括电、热、冷、光照强度等；单一数据包括碳排放因子、能源价格、设备价格、设备效率等
     # --- 各时段数据 ---
     period = len(period_data["p_load"])
-    p_load = period_data["p_load"]
-    g_load = period_data["g_load"]
-    q_load = period_data["q_load"]
+    p_load = period_data["p_load"]  
+    g_load = period_data["g_load"]  
+    q_load = period_data["q_load"]  
     r_solar = period_data["r_solar"]  # 光照强度
 
     # 展示负荷信息
@@ -55,6 +55,7 @@ def planning_problem(period_data, input_param):
     k_ghp_q = input_param["device"]["ghp"]["k_ghp_q"]  # 地源热泵产冷效率
     mu_tank_loss = input_param["device"]["tank"]["mu_loss"]  # 蓄水箱能量损失系数
 
+
     t_ht_min = input_param["device"]["tank"]["t_ht_min"]
 
     # ------ Variables ------
@@ -62,70 +63,59 @@ def planning_problem(period_data, input_param):
     p_pur = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_pur{t}") for t in range(period)]  # 从电网购电量
     p_sell = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_sell{t}") for t in range(period)]  # 向电网卖电量
     # 光伏板
-    s_pv_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["pv"]["area_max"],
-                             name=f"s_pv_inst")  # 光伏板装机容量
+    s_pv_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["pv"]["area_max"], name=f"s_pv_inst")  # 光伏板装机容量
     p_pv = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_pv{t}") for t in range(period)]  # 光伏板产电量
     # 太阳能集热器
-    s_sc_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["sc"]["area_max"],
-                             name=f"s_sc_inst")  # 太阳能集热器装机容量
+    s_sc_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["sc"]["area_max"], name=f"s_sc_inst")  # 太阳能集热器装机容量
     g_sc = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_sc{t}") for t in range(period)]  # 太阳能集热器产热量
     # 氢燃料电池
-    p_fc_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["fc"]["p_max"],
-                             name=f"p_fc_inst")  # 氢燃料电池装机容量
+    p_fc_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["fc"]["p_max"], name=f"p_fc_inst")  # 氢燃料电池装机容量
     h_fc = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"h_fc{t}") for t in range(period)]  # 氢燃料电池耗氢量
     p_fc = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_fc{t}") for t in range(period)]  # 氢燃料电池产电量
     g_fc = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_fc{t}") for t in range(period)]  # 氢燃料电池产热量
     # 电解槽
-    p_el_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["el"]["p_max"],
-                             name="p_el_inst")  # 电解槽装机容量
+    p_el_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["el"]["p_max"], name="p_el_inst")  # 电解槽装机容量
     h_el = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"h_el{t}") for t in range(period)]  # 电解槽产氢量
     p_el = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_el{t}") for t in range(period)]  # 电解槽耗电量
     # 电锅炉
-    p_eb_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["eb"]["p_max"],
-                             name=f"p_eb_inst")  # 电锅炉装机容量
+    p_eb_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["eb"]["p_max"], name=f"p_eb_inst")  # 电锅炉装机容量
     p_eb = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_eb{t}") for t in range(period)]  # 电锅炉耗电量
     g_eb = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_eb{t}") for t in range(period)]  # 电锅炉产热量
     # 空气源热泵
-    p_hp_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hp"]["p_max"],
-                             name=f"p_hp_inst")  # 空气源热泵装机容量
+    p_hp_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hp"]["p_max"], name=f"p_hp_inst")  # 空气源热泵装机容量
     p_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_hp{t}") for t in range(period)]  # 空气源热泵耗电量
     g_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_hp{t}") for t in range(period)]  # 空气源热泵产热量
     q_hp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"q_hp{t}") for t in range(period)]  # 空气源热泵产冷量
     # 地源热泵
-    p_ghp_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["ghp"]["p_max"],
-                              name=f"p_ghp_inst")  # 地源热泵装机容量
+    p_ghp_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["ghp"]["p_max"], name=f"p_ghp_inst")  # 地源热泵装机容量
     p_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"p_ghp{t}") for t in range(period)]  # 地源热泵耗电量
     g_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp{t}") for t in range(period)]  # 地源热泵产热量
     g_ghp_inj = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ghp_inj{t}") for t in range(period)]  # 地源热泵灌热量
     q_ghp = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"q_ghp{t}") for t in range(period)]  # 地源热泵产冷量
     # 储氢罐
-    h_hst_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hst"]["h_max"],
-                              name=f"h_hst_inst")  # 储氢罐装机容量
+    h_hst_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["hst"]["h_max"], name=f"h_hst_inst")  # 储氢罐装机容量
     h_hst = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"h_hst{t}") for t in range(period)]  # 储氢罐储氢量
     delta_h_hst = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"delta_h_hst{t}") for t in range(period)]  # 储氢罐储氢变化量
     # 热水箱
-    m_tank_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["tank"]["m_max"],
-                               name=f"m_tank_inst")  # 蓄水箱装机容量
-    t_ht = [model.addVar(vtype=GRB.CONTINUOUS, lb=input_param["device"]["tank"]["t_ht_min"],
-                         ub=input_param["device"]["tank"]["t_ht_max"], name=f"t_ht{t}") for t in range(period)]  # 热水箱水温
+    m_tank_inst = model.addVar(vtype=GRB.CONTINUOUS, lb=0, ub=input_param["device"]["tank"]["m_max"], name=f"m_tank_inst")  # 蓄水箱装机容量
+    t_ht = [model.addVar(vtype=GRB.CONTINUOUS, lb=input_param["device"]["tank"]["t_ht_min"], ub=input_param["device"]["tank"]["t_ht_max"], name=f"t_ht{t}") for t in range(period)]  # 热水箱水温
     g_ht = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"g_ht{t}") for t in range(period)]  # 热水箱供热量
     delta_g_ht = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"delta_g_ht{t}") for t in range(period)]  # 热水箱储热变化量
     g_ht_loss = [model.addVar(vtype=GRB.CONTINUOUS, lb=0, name=f"g_ht_loss{t}") for t in range(period)]  # 热水箱热损失量
-    t_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=input_param["device"]["tank"]["t_ct_min"],
-                         ub=input_param["device"]["tank"]["t_ct_min"], name=f"t_ct{t}") for t in range(period)]  # 冷水箱水温
+    t_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=input_param["device"]["tank"]["t_ct_min"], ub=input_param["device"]["tank"]["t_ct_min"], name=f"t_ct{t}") for t in range(period)]  # 冷水箱水温
     q_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"q_ct{t}") for t in range(period)]  # 冷水箱供冷量
     delta_q_ct = [model.addVar(vtype=GRB.CONTINUOUS, lb=-M, name=f"delta_q_ct{t}") for t in range(period)]  # 冷水箱储冷变化量
 
     # 设备装机列表，每次必须生成，只包含上文建模出现过的设备
     device_inst_list = {
-        "电解槽": p_el_inst,
-        "光伏板": s_pv_inst,
-        "燃料电池": p_fc_inst,
-        "电锅炉": p_eb_inst,
-        "空气源热泵": p_hp_inst,
-        "地源热泵": p_ghp_inst,
-        "储氢罐": h_hst_inst,
-        "热水箱": m_tank_inst,
+        "电解槽":p_el_inst,
+        "光伏板":s_pv_inst,
+        "燃料电池":p_fc_inst,
+        "电锅炉":p_eb_inst,
+        "空气源热泵":p_hp_inst,
+        "地源热泵":p_ghp_inst,
+        "储氢罐":h_hst_inst,
+        "热水箱":m_tank_inst,
     }
     # ------ Update model ------
     model.update()
@@ -163,6 +153,7 @@ def planning_problem(period_data, input_param):
         # 冷水箱（蓄水箱储冷时）
         model.addConstr(q_ct[t] == -delta_q_ct[t])  # 冷水箱供冷量
 
+
     # 储能设备约束
     for t in range(period - 1):
         model.addConstr(delta_h_hst[t] == h_hst[t + 1] - h_hst[t])  # 储氢罐储氢变化量
@@ -172,11 +163,10 @@ def planning_problem(period_data, input_param):
     model.addConstr(delta_h_hst[-1] == h_hst[0] - h_hst[-1])  # 储氢罐约束
     model.addConstr(delta_g_ht[-1] == c_water * m_tank_inst * (t_ht[0] - t_ht[-1]))  # 热水箱约束
     model.addConstr(delta_q_ct[-1] == -c_water * m_tank_inst * (t_ct[0] - t_ct[-1]))  # 冷水箱约束
-
+    
     # --- 能量平衡约束 ---
     for t in range(period):
-        model.addConstr(p_pur[t] + p_pv[t] + p_fc[t] - p_sell[t] == p_load[t] + p_el[t] + p_eb[t] + p_hp[t] + p_ghp[
-            t])  # 电平衡约束，只能包含已有的变量
+        model.addConstr(p_pur[t] + p_pv[t] + p_fc[t] - p_sell[t] == p_load[t] + p_el[t] + p_eb[t] + p_hp[t] + p_ghp[t])  # 电平衡约束，只能包含已有的变量
         # g_load 为 numpy 数组，不能单独放在约束的左侧；q_load 同理
         model.addConstr(g_sc[t] + g_fc[t] + g_eb[t] + g_hp[t] + g_ht[t] + g_ghp[t] == g_load[t] + g_ghp_inj[t])  # 热平衡约束
         model.addConstr(q_hp[t] + q_ghp[t] + q_ct[t] == q_load[t])  # 冷平衡约束
@@ -192,10 +182,10 @@ def planning_problem(period_data, input_param):
              + cost_hp * p_hp_inst / input_param["device"]["hp"]["life"]
              + cost_ghp * p_ghp_inst / input_param["device"]["ghp"]["life"]
              + cost_hst * h_hst_inst / input_param["device"]["hst"]["life"]
-             + cost_tank * m_tank_inst / input_param["device"]["tank"]["life"])
+             + cost_tank * m_tank_inst / input_param["device"]["tank"]["life"])  
     # 运行费用
     opex = (gp.quicksum([p_pur[t] * p_price[t] for t in range(period)])
             - gp.quicksum([p_sell[t] for t in range(period)]) * p_sell_price
-            + gp.quicksum([h_pur[t] for t in range(period)]) * h_price)
+            + gp.quicksum([h_pur[t] for t in range(period)]) * h_price)  
     model.setObjective((capex + opex), GRB.MINIMIZE)
     return model, device_inst_list
