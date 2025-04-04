@@ -10,6 +10,8 @@ from module.utils import LOG_ROOT
 class OpenAILogger:
     def __init__(self):
         self.log_root = LOG_ROOT
+        # 创建目录
+        Path(LOG_ROOT).mkdir(parents=True, exist_ok=True)
         self.handlers: Dict[str, logging.FileHandler] = {}  # 缓存 Handler
 
         # 创建根 Logger
