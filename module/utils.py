@@ -9,6 +9,7 @@ import transformers
 
 PROJECT_PATH = str(Path(__file__).resolve().parents[1]).replace("\\", "/")
 LOG_ROOT = f"{PROJECT_PATH}/log"
+Path(LOG_ROOT).mkdir(parents=True, exist_ok=True)
 
 res_dict = "./doc/"
 
