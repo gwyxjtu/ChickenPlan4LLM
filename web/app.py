@@ -86,8 +86,7 @@ def create_handler():
         st.session_state["session_ts"] = datetime.now().strftime("%Y%m%d_%H%M%S")
     handler_key = f"{st.session_state['current_page']}_{st.session_state['session_ts']}"
     log_dir = f"{LOG_ROOT}/{handler_key}"
-    if not Path(log_dir).exists():
-        Path(log_dir).mkdir(parents=True, exist_ok=True)
+    Path(log_dir).mkdir(parents=True, exist_ok=True)
 
     st.session_state.conversation_logger.add_handler(
         ui_page=st.session_state["current_page"],

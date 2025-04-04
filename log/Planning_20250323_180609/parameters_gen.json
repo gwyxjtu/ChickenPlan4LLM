@@ -1,0 +1,216 @@
+{
+    "load": {
+        "building_type": "Apartment",
+        "p_max": 50000,
+        "g_max": 200000,
+        "q_max": 100000,
+        "p_area": 12000,
+        "g_area": 12000,
+        "q_area": 12000
+    },
+    "price": {
+        "TOU_power": [
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
+        ],
+        "p_sell_price": 0,
+        "g_price": 5.4,
+        "q_price": 9.5,
+        "h_price": 20.0
+    },
+    "device": {
+        "pv": {
+            "_comment": "photovoltaic，光伏板",
+            "area_max": 50000,
+            "area_min": 0,
+            "cost": 700,
+            "life": 20,
+            "k_pv": 0.21
+        },
+        "sc": {
+            "_comment": "solar collector，太阳能集热器",
+            "area_max": 0,
+            "area_min": 0,
+            "cost": 800,
+            "life": 20,
+            "k_sc": 0.72
+        },
+        "fc": {
+            "_comment": "fuel cell，氢燃料电池",
+            "p_max": 10000,
+            "p_min": 0,
+            "cost": 8000,
+            "life": 10,
+            "k_fc_p": 15,
+            "k_fc_g": 22,
+            "eta_ex": 0.95
+        },
+        "el": {
+            "_comment": "electrolyzer，电解槽",
+            "p_max": 1000,
+            "p_min": 0,
+            "cost": 2240,
+            "life": 7,
+            "k_el": 0.0182
+        },
+        "eb": {
+            "_comment": "electric boiler，电锅炉",
+            "p_max": 10000,
+            "p_min": 0,
+            "cost": 500,
+            "life": 10,
+            "k_eb": 0.9
+        },
+        "hp": {
+            "_comment": "heat pump，热泵",
+            "p_max": 1000,
+            "p_min": 0,
+            "cost": 68000,
+            "life": 15,
+            "k_hp_g": 4.59,
+            "k_hp_q": 0
+        },
+        "ghp": {
+            "_comment": "ground source heat pump，地源热泵",
+            "p_max": 1000,
+            "p_min": 0,
+            "cost": 3000,
+            "life": 15,
+            "k_ghp_g": 3.54,
+            "k_ghp_q": 4.5
+        },
+        "hst": {
+            "_comment": "hydrogen storage tank，储氢罐",
+            "h_max": 2000,
+            "h_min": 0,
+            "cost": 3000,
+            "life": 15
+        },
+        "tank": {
+            "_comment": "water tank，蓄水箱，用于储热（此时为热水箱（ht））或储冷（此时为冷水箱（ct））",
+            "m_max": 10000,
+            "m_min": 0,
+            "cost": 0.5,
+            "life": 20,
+            "t_ht_max": 80,
+            "t_ht_min": 20,
+            "t_ct_max": 13,
+            "t_ct_min": 4,
+            "mu_loss": 0.001
+        }
+    },
+    "carbon": {
+        "alpha_h2": 1.74,
+        "alpha_e": 0.5839,
+        "alpha_EO": 0.8922,
+        "alpha_gas": 1.535
+    },
+    "目标函数": "最小化所有设备年化投资费用和系统运行费用之和，其中各设备的年化投资费用由设备单价、设备容量和设备寿命计算，系统运行费用包括买电费用和买氢费用减去向电网卖电收入",
+    "约束条件": [
+        "设备容量约束：氢燃料电池装机容量\\var{p_fc_inst}不得大于其最大装机容量\\param{p_fc_max}",
+        "设备运行约束：调度周期\\param{period}内各时段氢燃料电池产电量\\var{p_fc[t]}等于其产电效率\\param{k_fc_p}和耗氢量\\var{h_fc[t]}的乘积",
+        "设备运行约束：调度周期\\param{period}内各时段氢燃料电池产热量\\var{g_fc[t]}等于其热交换效率\\param{eta_fc}、热转换效率\\param{k_fc_g}和耗氢量\\var{h_fc[t]}的乘积",
+        "设备运行约束：调度周期\\param{period}内各时段氢燃料电池产电量\\var{p_fc[t]}不得大于其装机容量\\var{p_fc_inst}",
+        "设备容量约束：热水箱装机容量\\var{m_tank_inst}不得大于其装机上限\\param{m_tank_max}",
+        "设备运行约束：各时段热水箱（蓄水箱储热时）供热量\\var{g_ht[t]}等于热水箱储热变化量\\var{delta_g_ht[t]}的负值减去其热损失量\\var{g_ht_loss[t]}",
+        "设备运行约束：各时段热水箱热损失量\\var{g_ht_loss[t]}等于热损失系数\\param{mu_tank_loss}、水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和当前时刻水箱水温\\var{t_ht[t]}与环境温度（最低水温）\\param{t_ht_min}的差值的乘积",
+        "设备运行约束：除最后一时段，各时段热水箱储热变化量\\var{delta_g_ht[t]}等于水的比热 c_water、水箱中水的质量\\var{m_tank_inst}和水箱中水温变化量（下一时刻水温\\var{t_ht[t+1]}减去当前时刻水箱水温\\var{t_ht[t]}）的乘积"
+    ],
+    "参数": [
+        {
+            "参数集信息": "负荷信息",
+            "具体内容": "包括建筑类型、电负荷峰值、热负荷峰值、冷负荷峰值、供热月份、供冷月份、供电面积、供热面积、供冷面积、电负荷、热负荷、冷负荷等",
+            "符号": [
+                "building_type",
+                "p_max",
+                "g_max",
+                "q_max",
+                "g_month",
+                "q_month",
+                "p_area",
+                "g_area",
+                "q_area",
+                "p_load",
+                "g_load",
+                "q_load"
+            ]
+        },
+        {
+            "参数集信息": "能源价格信息",
+            "具体内容": "包括分时电价、向电网卖电价格、氢气价格",
+            "符号": [
+                "p_price",
+                "p_sell_price",
+                "h_price"
+            ]
+        }
+    ],
+    "变量": [
+        {
+            "变量集信息": "系统运行费用变量",
+            "具体内容": "包括买电费用、买氢费用、向电网卖电收入",
+            "符号": [
+                "p_pur",
+                "h_pur",
+                "p_sell"
+            ]
+        },
+        {
+            "变量集信息": "氢燃料电池规划与运行变量",
+            "具体内容": "包括氢燃料电池装机容量、氢燃料电池耗氢量、氢燃料电池产电量、氢燃料电池产热量",
+            "符号": [
+                "p_fc_inst",
+                "h_fc",
+                "p_fc",
+                "g_fc"
+            ]
+        },
+        {
+            "变量集信息": "热水箱规划与运行变量",
+            "具体内容": "包括热水箱装机容量、热水箱供热量、热水箱储热变化量、热水箱热损失量、热水箱水温",
+            "符号": [
+                "m_tank_inst",
+                "g_ht",
+                "delta_g_ht",
+                "g_ht_loss",
+                "t_ht"
+            ]
+        },
+        {
+            "变量集信息": "地源热泵规划与运行变量",
+            "具体内容": "包括地源热泵装机容量、地源热泵产热量、地源热泵产冷量、地源热泵耗电量",
+            "符号": [
+                "p_ghp_inst",
+                "g_ghp",
+                "q_ghp",
+                "p_ghp"
+            ]
+        }
+    ]
+}
