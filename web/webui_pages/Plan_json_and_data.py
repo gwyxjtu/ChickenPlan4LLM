@@ -19,7 +19,7 @@ from module.LLM import (
     example_info_input,
     example_param_output
 )
-from module.utils import PROJECT_PATH, LOG_ROOT
+from module.utils import PROJECT_PATH, LOG_ROOT, dump_json_with_compact_lists
 
 
 def page_json2param(client):
@@ -61,8 +61,7 @@ def page_json2param(client):
             # Write the parsed JSON with standard formatting
             handler_key = f"{st.session_state['current_page']}_{st.session_state['session_ts']}"
             log_dir = f"{LOG_ROOT}/{handler_key}"
-            with open(log_dir + "/parameters_gen.json", "w", encoding="utf-8") as f:
-                json.dump(json_data, f, ensure_ascii=False, indent=4)
+            dump_json_with_compact_lists(json_data, f"{log_dir}/parameters_gen.json")
         except json.JSONDecodeError:
             st.error("Invalid JSON format in parameters")
 
